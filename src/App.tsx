@@ -15,22 +15,99 @@ import { Progress } from '@/components/ui/progress'
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
-// Module data
+// Module data — aligned with Udemy course: "DeepTechX Launchpad — From Vision to Execution Framework"
 const modules = [
-  { id: 'M01', title: 'System-Thinking Vetting & De-Hype', level: 'All', icon: Brain, color: 'from-purple-500 to-pink-500', hasCalculator: true },
-  { id: 'M02', title: 'Fast-Track Development Framework', level: 'Technical', icon: Zap, color: 'from-blue-500 to-cyan-500', hasCalculator: true },
-  { id: 'M03', title: 'Regulatory-First Design', level: 'Specialist', icon: Shield, color: 'from-emerald-500 to-teal-500', hasCalculator: false },
-  { id: 'M04', title: 'Go-To-Market & Tokenomics', level: 'Business', icon: Coins, color: 'from-green-500 to-emerald-500', hasCalculator: true },
-  { id: 'M05', title: 'Building AI Agents for Deep Tech', level: 'Advanced', icon: Bot, color: 'from-violet-500 to-purple-500', hasCalculator: false },
-  { id: 'M06', title: 'PQC & Quantum-Safe Systems', level: 'Specialist', icon: Lock, color: 'from-orange-500 to-red-500', hasCalculator: true },
-  { id: 'M07', title: 'Nuclear + Fusion Energy', level: 'Specialist', icon: Zap, color: 'from-yellow-500 to-orange-500', hasCalculator: false },
-  { id: 'M08', title: 'Space Tech: From Project to Hero', level: 'Intrapreneur', icon: Rocket, color: 'from-cyan-500 to-blue-500', hasCalculator: true },
-  { id: 'M09', title: 'AI Ethics & Governance', level: 'All', icon: Scale, color: 'from-indigo-500 to-violet-500', hasCalculator: false },
-  { id: 'M10', title: 'Frugal Innovation', level: 'Entrepreneur', icon: Lightbulb, color: 'from-amber-500 to-yellow-500', hasCalculator: false },
-  { id: 'M11', title: 'AI Agents in Space Tech', level: 'Advanced', icon: Orbit, color: 'from-fuchsia-500 to-pink-500', hasCalculator: false },
-  { id: 'M12', title: 'Unit Economics & Sovereign Scaling', level: 'Business', icon: TrendingUp, color: 'from-lime-500 to-green-500', hasCalculator: true },
-  { id: 'M13', title: 'First-Principles + Systems Thinking', level: 'All', icon: Layers, color: 'from-rose-500 to-red-500', hasCalculator: false },
-  { id: 'M14', title: 'Agentic Monetization & Unicorn Playbook', level: 'Founder', icon: Target, color: 'from-sky-500 to-blue-500', hasCalculator: false },
+  {
+    id: 'M01', title: 'System-Thinking Vetting & De-Hype', level: 'All', icon: Brain,
+    color: 'from-purple-500 to-pink-500', hasCalculator: true,
+    description: 'Apply human-centered design and commercial velocity frameworks to identify genuinely viable deep tech opportunities. Cut through hype with first-principles analysis.',
+    lectures: ['Human-Centered Design for Deep Tech Innovation: The Commercial Velocity Playbook'],
+  },
+  {
+    id: 'M02', title: 'Fast-Track Development Framework', level: 'Technical', icon: Zap,
+    color: 'from-blue-500 to-cyan-500', hasCalculator: true,
+    description: 'Launch your deep tech venture from scientist to scalable startup. Escape the expert trap using the 5-Steps Deep Tech Framework.',
+    lectures: ['Deep Tech Venture Launchpad — From Scientist to Scalable Startup', 'The Expert Trap & The 5-Steps Deep Tech Framework'],
+  },
+  {
+    id: 'M03', title: 'Regulatory-First Design', level: 'Specialist', icon: Shield,
+    color: 'from-emerald-500 to-teal-500', hasCalculator: false,
+    description: 'Navigate regulatory environments proactively. Build compliance as a competitive advantage, not a constraint, across space, health, and fintech sectors.',
+    lectures: [],
+  },
+  {
+    id: 'M04', title: 'Go-To-Market & Tokenomics', level: 'Business', icon: Coins,
+    color: 'from-green-500 to-emerald-500', hasCalculator: true,
+    description: 'Design tokenization strategies for real-world assets (RWAs) and craft go-to-market playbooks including strategic bitcoin reserve frameworks for emerging markets.',
+    lectures: ['Tokenomics and RWAs Tokenization Presentation', 'Stratégie Financière Africaine: Réserves de Bitcoin'],
+  },
+  {
+    id: 'M05', title: 'Building AI Agents for Deep Tech', level: 'Advanced', icon: Bot,
+    color: 'from-violet-500 to-purple-500', hasCalculator: false,
+    description: 'Build and deploy AI automation agencies tailored for deep tech workflows. Become the "Digital Operator" for your sector using local AI agent stacks.',
+    lectures: ['Local AI Automation Agency (The "Digital Operator")'],
+  },
+  {
+    id: 'M06', title: 'PQC & Quantum-Safe Systems', level: 'Specialist', icon: Lock,
+    color: 'from-orange-500 to-red-500', hasCalculator: true,
+    description: 'Master post-quantum cryptography and the Crypto Agility framework. Design quantum-safe systems before the Q-Day threat window closes.',
+    lectures: ['Post-Quantum Cryptography & Quantum-Safe Systems', 'The Crypto Agility Manifesto Presentation'],
+  },
+  {
+    id: 'M07', title: 'Nuclear + Fusion Energy', level: 'Specialist', icon: Zap,
+    color: 'from-yellow-500 to-orange-500', hasCalculator: false,
+    description: 'Analyze the commercialization pathway for nuclear and fusion energy ventures. Understand reactor economics, licensing hurdles, and the new energy investment landscape.',
+    lectures: [],
+  },
+  {
+    id: 'M08', title: 'Space Tech: From Project to Hero', level: 'Intrapreneur', icon: Rocket,
+    color: 'from-cyan-500 to-blue-500', hasCalculator: true,
+    description: 'Commercialize EO and space data across healthcare, mobility, gaming, and logistics. Master EGNSS and Earth Observation startup playbooks for real-world market applications.',
+    lectures: [
+      'The Earth Observation Startup Playbook - Part 1',
+      'The Earth Observation Startup Playbook - Part 2',
+      'Space Technology in Healthcare — EGNSS In Healthcare',
+      'Space & Gaming: Why Space Tech-Enabled Gaming is More than a Game',
+      'Space and Gaming As a Category of Consumer Solutions',
+      'Bridging Space Technology with User Needs — EGNSS+EO Data for Mobility, Health, Logistics & Climate',
+    ],
+  },
+  {
+    id: 'M09', title: 'AI Ethics & Governance', level: 'All', icon: Scale,
+    color: 'from-indigo-500 to-violet-500', hasCalculator: false,
+    description: 'Navigate AI governance frameworks and boardroom statecraft in a multipolar world. Understand geopolitical drift and how it shapes deep tech strategy in 2026.',
+    lectures: ['Boardroom Statecraft 2026: Navigating the Global Drift'],
+  },
+  {
+    id: 'M10', title: 'Frugal Innovation', level: 'Entrepreneur', icon: Lightbulb,
+    color: 'from-amber-500 to-yellow-500', hasCalculator: false,
+    description: 'Apply resource-constrained innovation methodologies to build resilient deep tech ventures with outsized global impact and sovereign scalability.',
+    lectures: [],
+  },
+  {
+    id: 'M11', title: 'AI Agents in Space Tech', level: 'Advanced', icon: Orbit,
+    color: 'from-fuchsia-500 to-pink-500', hasCalculator: false,
+    description: 'Deploy autonomous AI agents across space technology workflows — from satellite operations and ground segment automation to mission planning and anomaly detection.',
+    lectures: [],
+  },
+  {
+    id: 'M12', title: 'Unit Economics & Sovereign Scaling', level: 'Business', icon: TrendingUp,
+    color: 'from-lime-500 to-green-500', hasCalculator: true,
+    description: 'Model unit economics for deep tech ventures from seed to sovereign-level deployment. Build financial models that hold under real-world capital constraints.',
+    lectures: [],
+  },
+  {
+    id: 'M13', title: 'First-Principles + Systems Thinking', level: 'All', icon: Layers,
+    color: 'from-rose-500 to-red-500', hasCalculator: false,
+    description: 'Rebuild complex problems from scratch using first-principles reasoning and systems thinking maps. The mental foundation for every other module.',
+    lectures: [],
+  },
+  {
+    id: 'M14', title: 'Agentic Monetization & Unicorn Playbook', level: 'Founder', icon: Target,
+    color: 'from-sky-500 to-blue-500', hasCalculator: false,
+    description: 'Productize your expertise into scalable AI-powered consulting services. Learn the AI-powered consulting revolution and chart the path to unicorn exit.',
+    lectures: ['The AI-Powered Consulting Revolution', 'Consulting Productization Training — Productize Yourself!'],
+  },
 ]
 
 // De-Hype Calculator Component
@@ -560,9 +637,21 @@ function App() {
                   </DialogHeader>
                   <div className="mt-4">
                     <p className="text-slate-600 mb-4">
-                      Learn the fundamentals of {module.title.toLowerCase()} with real-world case studies 
-                      and actionable frameworks used by successful deep tech ventures.
+                      {module.description}
                     </p>
+                    {module.lectures && module.lectures.length > 0 && (
+                      <div className="mb-4">
+                        <h4 className="font-bold text-sm text-slate-500 uppercase tracking-wide mb-2">Udemy Lectures</h4>
+                        <ul className="space-y-1">
+                          {module.lectures.map((lecture, i) => (
+                            <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
+                              <Play className="w-3 h-3 text-purple-500 mt-1 flex-shrink-0" />
+                              <span>{lecture}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                     {module.hasCalculator && (
                       <div className="mt-6">
                         <h4 className="font-bold mb-3 flex items-center gap-2">
