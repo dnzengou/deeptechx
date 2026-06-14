@@ -933,19 +933,24 @@ function UserStoryGenerator() {
 //  CURRICULUM VIEW — Udemy-style accordion
 // ────────────────────────────────────────────────────────────────────
 function CurriculumView() {
-  const [openModule, setOpenModule] = useState<string>('M01')
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({ 'M01-s1': true })
+  const availableModules = modules.filter(m => curriculumByModule[m.id])
+  const [openModule, setOpenModule] = useState<string>(availableModules[0]?.id ?? 'M01')
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({ [`${availableModules[0]?.id ?? 'M01'}-s1`]: true })
 
   const toggleSection = (key: string) => setOpenSections(p => ({ ...p, [key]: !p[key] }))
 
   const sectionsForModule = (id: string): Section[] => curriculumByModule[id] || []
   const totalLessons = (id: string) => sectionsForModule(id).reduce((sum, s) => sum + s.lessons.length, 0)
+  const hiddenCount = modules.length - availableModules.length
 
   return (
     <div className="grid lg:grid-cols-[280px_1fr] gap-6">
       <aside className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-3 max-h-[700px] overflow-y-auto">
-        <div className="text-xs uppercase tracking-wider text-white/40 px-2 py-2">Curriculum</div>
-        {modules.map(m => {
+        <div className="text-xs uppercase tracking-wider text-white/40 px-2 py-2 flex items-center justify-between">
+          <span>Curriculum</span>
+          <span className="text-white/30 normal-case tracking-normal">{availableModules.length} / {modules.length}</span>
+        </div>
+        {availableModules.map(m => {
           const lessons = totalLessons(m.id)
           const active = openModule === m.id
           return (
@@ -964,6 +969,12 @@ function CurriculumView() {
             </button>
           )
         })}
+        {hiddenCount > 0 && (
+          <div className="mt-3 mx-2 px-3 py-2.5 rounded-lg bg-white/5 border border-dashed border-white/10 text-[11px] text-white/40 flex items-center gap-2">
+            <Sparkles className="w-3 h-3 text-purple-400 shrink-0" />
+            <span>{hiddenCount} more modules in development. Browse them in the full grid below.</span>
+          </div>
+        )}
       </aside>
 
       <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
@@ -994,13 +1005,7 @@ function CurriculumView() {
                 </div>
               </div>
 
-              {sections.length === 0 ? (
-                <div className="bg-white/5 border border-white/10 rounded-xl p-8 text-center">
-                  <Sparkles className="w-8 h-8 text-purple-400 mx-auto mb-2" />
-                  <div className="text-white font-semibold mb-1">Coming Soon</div>
-                  <div className="text-sm text-white/60">Detailed lessons for {m.id} are being curated. Lectures and labs will appear here.</div>
-                </div>
-              ) : (
+              {sections.length === 0 ? null : (
                 <div className="space-y-2">
                   {sections.map((s, si) => {
                     const key = `${m.id}-${s.id}`
@@ -1354,6 +1359,8 @@ const cryptoOptions: CryptoOption[] = [
     address: EVM_ADDR, icon: Coins, color: 'from-blue-500 to-cyan-500' },
   { id: 'usdt-bsc', symbol: 'USDT', name: 'Tether', network: 'BEP-20',
     address: EVM_ADDR, icon: Coins, color: 'from-emerald-500 to-teal-500' },
+  { id: 'wbtc', symbol: 'WBTC', name: 'Wrapped BTC', network: 'ERC-20',
+    address: EVM_ADDR, icon: Bitcoin, color: 'from-orange-500 to-amber-500' },
 ]
 
 function shortAddress(addr: string) {
@@ -1410,22 +1417,51 @@ function CopyAddressRow({ option }: { option: CryptoOption }) {
   )
 }
 
+const VERIFY_TX_URL = (import.meta.env.VITE_VERIFY_TX_URL as string | undefined) || ''
+
 function PaymentModal({ tier, open, onOpenChange }: { tier: Tier; open: boolean; onOpenChange: (v: boolean) => void }) {
   const [confirming, setConfirming] = useState(false)
+  const [chain, setChain] = useState<string>(cryptoOptions[0].id)
+  const [email, setEmail] = useState('')
   const [txHash, setTxHash] = useState('')
   const [sent, setSent] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string>('')
 
   const handleCardCheckout = () => {
     window.open(tier.cardLink, '_blank', 'noopener,noreferrer')
   }
 
-  const handleSubmitTx = () => {
-    if (!txHash.trim()) return
-    setSent(true)
-    // In production: POST { tier: tier.name, txHash, email } to backend for verification.
+  const handleSubmitTx = async () => {
+    if (!txHash.trim() || !email.trim()) return
+    setSubmitting(true)
+    setSubmitError('')
+    if (VERIFY_TX_URL) {
+      try {
+        const res = await fetch(VERIFY_TX_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tier: tier.name, amountUSD: tier.amountUSD, chain, txHash: txHash.trim(), email: email.trim() }),
+        })
+        if (!res.ok) {
+          const text = await res.text().catch(() => '')
+          throw new Error(text || `Verification failed (${res.status})`)
+        }
+        setSent(true)
+      } catch (e: unknown) {
+        setSubmitError(e instanceof Error ? e.message : 'Network error — try again')
+      }
+    } else {
+      // No backend wired yet — accept the submission optimistically and let the operator reconcile.
+      setSent(true)
+    }
+    setSubmitting(false)
   }
 
-  const reset = () => { setConfirming(false); setTxHash(''); setSent(false) }
+  const reset = () => {
+    setConfirming(false); setChain(cryptoOptions[0].id); setEmail(''); setTxHash('')
+    setSent(false); setSubmitting(false); setSubmitError('')
+  }
 
   return (
     <Dialog open={open} onOpenChange={(v) => { onOpenChange(v); if (!v) reset() }}>
@@ -1508,6 +1544,28 @@ function PaymentModal({ tier, open, onOpenChange }: { tier: Tier; open: boolean;
               <>
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
                   <div>
+                    <label className="text-xs text-white/60 uppercase tracking-wider mb-1 block">Network</label>
+                    <select
+                      value={chain}
+                      onChange={(e) => setChain(e.target.value)}
+                      className="w-full bg-black/30 border border-white/10 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50"
+                    >
+                      {cryptoOptions.map(o => (
+                        <option key={o.id} value={o.id} className="bg-[#0a0a1a]">{o.symbol} — {o.name} ({o.network})</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-white/60 uppercase tracking-wider mb-1 block">Email</label>
+                    <Input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="you@example.com"
+                      className="bg-black/30 border-white/10 text-white placeholder:text-white/30"
+                    />
+                  </div>
+                  <div>
                     <label className="text-xs text-white/60 uppercase tracking-wider mb-1 block">Transaction Hash</label>
                     <Input
                       value={txHash}
@@ -1520,10 +1578,13 @@ function PaymentModal({ tier, open, onOpenChange }: { tier: Tier; open: boolean;
                     We'll confirm on-chain and email your access details. Make sure the tx is broadcast before submitting.
                   </p>
                 </div>
+                {submitError && (
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-xs text-red-200">{submitError}</div>
+                )}
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={() => setConfirming(false)} className="border-white/20 text-white hover:bg-white/10">Back</Button>
-                  <Button onClick={handleSubmitTx} disabled={!txHash.trim()} className={`flex-1 bg-gradient-to-r ${tier.accent} disabled:opacity-40`}>
-                    Submit
+                  <Button variant="outline" onClick={() => setConfirming(false)} className="border-white/20 text-white hover:bg-white/10" disabled={submitting}>Back</Button>
+                  <Button onClick={handleSubmitTx} disabled={!txHash.trim() || !email.trim() || submitting} className={`flex-1 bg-gradient-to-r ${tier.accent} disabled:opacity-40`}>
+                    {submitting ? 'Verifying…' : 'Submit'}
                   </Button>
                 </div>
               </>
