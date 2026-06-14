@@ -1298,8 +1298,10 @@ type Tier = {
   cta: string
   popular?: boolean
   amountUSD: number
-  stripeLink: string
+  cardLink: string
 }
+
+const BMaC_URL = 'https://buymeacoffee.com/yavro'
 
 const tiers: Tier[] = [
   {
@@ -1308,7 +1310,7 @@ const tiers: Tier[] = [
     features: ['All 14 modules', 'All 6 quizzes', 'Interactive calculators', 'Community access'],
     cta: 'Get Started',
     amountUSD: 597,
-    stripeLink: 'https://buy.stripe.com/REPLACE_ME_LIFETIME',
+    cardLink: BMaC_URL,
   },
   {
     name: 'NFT Edition', price: '$1,197', sub: 'One-time + NFT',
@@ -1317,7 +1319,7 @@ const tiers: Tier[] = [
     cta: 'Get NFT Edition',
     popular: true,
     amountUSD: 1197,
-    stripeLink: 'https://buy.stripe.com/REPLACE_ME_NFT',
+    cardLink: BMaC_URL,
   },
   {
     name: 'Monthly Digest', price: '$67', priceSub: '/mo', sub: 'Cancel anytime',
@@ -1325,7 +1327,7 @@ const tiers: Tier[] = [
     features: ['Weekly insights', 'Market updates', 'Deal flow access', 'Expert interviews'],
     cta: 'Subscribe',
     amountUSD: 67,
-    stripeLink: 'https://buy.stripe.com/REPLACE_ME_MONTHLY',
+    cardLink: BMaC_URL,
   },
 ]
 
@@ -1339,17 +1341,19 @@ type CryptoOption = {
   color: string
 }
 
+const EVM_ADDR = '0xB2c4D12e01Bb3edAb015FaA441FD04B566b186Ba'
+
 const cryptoOptions: CryptoOption[] = [
-  { id: 'btc', symbol: 'BTC', name: 'Bitcoin', network: 'Bitcoin Mainnet',
-    address: 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh', icon: Bitcoin, color: 'from-orange-500 to-amber-500' },
+  { id: 'ton', symbol: 'TON', name: 'Toncoin', network: 'TON Mainnet',
+    address: 'UQBvgWPdj9J7SUMQCJxHvVXTc6uNE10SbB2g1waTxrh_4liP', icon: Wallet, color: 'from-sky-500 to-blue-500' },
   { id: 'eth', symbol: 'ETH', name: 'Ethereum', network: 'ERC-20',
-    address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0', icon: Wallet, color: 'from-indigo-500 to-blue-500' },
+    address: EVM_ADDR, icon: Wallet, color: 'from-indigo-500 to-blue-500' },
+  { id: 'bnb', symbol: 'BNB', name: 'BNB Chain', network: 'BEP-20',
+    address: EVM_ADDR, icon: Wallet, color: 'from-yellow-500 to-amber-500' },
   { id: 'usdc-eth', symbol: 'USDC', name: 'USD Coin', network: 'ERC-20',
-    address: '0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0', icon: Coins, color: 'from-blue-500 to-cyan-500' },
-  { id: 'usdt-tron', symbol: 'USDT', name: 'Tether', network: 'TRC-20',
-    address: 'TXYZopABCDEfgHIjKLmnoPQRstuVWxyz12345', icon: Coins, color: 'from-emerald-500 to-teal-500' },
-  { id: 'sol', symbol: 'SOL', name: 'Solana', network: 'Solana Mainnet',
-    address: '7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU', icon: Wallet, color: 'from-fuchsia-500 to-pink-500' },
+    address: EVM_ADDR, icon: Coins, color: 'from-blue-500 to-cyan-500' },
+  { id: 'usdt-bsc', symbol: 'USDT', name: 'Tether', network: 'BEP-20',
+    address: EVM_ADDR, icon: Coins, color: 'from-emerald-500 to-teal-500' },
 ]
 
 function shortAddress(addr: string) {
@@ -1411,12 +1415,8 @@ function PaymentModal({ tier, open, onOpenChange }: { tier: Tier; open: boolean;
   const [txHash, setTxHash] = useState('')
   const [sent, setSent] = useState(false)
 
-  const handleStripe = () => {
-    if (tier.stripeLink && !tier.stripeLink.includes('REPLACE_ME')) {
-      window.open(tier.stripeLink, '_blank', 'noopener,noreferrer')
-    } else {
-      alert('Stripe Payment Link not yet configured. Replace the placeholder in tiers config.')
-    }
+  const handleCardCheckout = () => {
+    window.open(tier.cardLink, '_blank', 'noopener,noreferrer')
   }
 
   const handleSubmitTx = () => {
@@ -1463,19 +1463,19 @@ function PaymentModal({ tier, open, onOpenChange }: { tier: Tier; open: boolean;
               <div className="flex items-center gap-3 mb-3">
                 <CreditCard className="w-5 h-5 text-purple-400" />
                 <div>
-                  <div className="text-sm font-semibold text-white">Pay with Stripe</div>
-                  <div className="text-xs text-white/50">Card, Apple Pay, Google Pay, Link</div>
+                  <div className="text-sm font-semibold text-white">Pay with Buy Me a Coffee</div>
+                  <div className="text-xs text-white/50">Card, Apple Pay, Google Pay · Stripe-secured</div>
                 </div>
               </div>
               <p className="text-xs text-white/60 mb-4">
-                You'll be redirected to a secure Stripe-hosted checkout page. Your card details never touch our servers.
+                You'll be redirected to <span className="font-mono text-white/80">buymeacoffee.com/yavro</span>. Set the amount to <strong className="text-white">{tier.price}</strong> and include your email in the note so we can deliver access.
               </p>
-              <Button onClick={handleStripe} className={`w-full bg-gradient-to-r ${tier.accent} gap-2`}>
-                Continue to Stripe <ExternalLink className="w-4 h-4" />
+              <Button onClick={handleCardCheckout} className={`w-full bg-gradient-to-r ${tier.accent} gap-2`}>
+                Continue to Buy Me a Coffee <ExternalLink className="w-4 h-4" />
               </Button>
             </div>
             <div className="flex items-center justify-center gap-3 text-[10px] text-white/40 uppercase tracking-wider">
-              <span>PCI DSS</span><span>·</span><span>3-D Secure</span><span>·</span><span>Encrypted</span>
+              <span>Stripe-Powered</span><span>·</span><span>3-D Secure</span><span>·</span><span>Encrypted</span>
             </div>
           </TabsContent>
 
