@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "deeptechx-tx-verifier",
+  "main": "src/worker.ts",
+  "compatibility_date": "2026-06-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    // Set the production address for the EVM treasury here (lowercase recommended).
+    "TREASURY_EVM": "0xb2c4d12e01bb3edab015faa441fd04b566b186ba",
+    "TREASURY_TON": "UQBvgWPdj9J7SUMQCJxHvVXTc6uNE10SbB2g1waTxrh_4liP"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "SUBMISSIONS",
+      // Run `wrangler kv namespace create SUBMISSIONS` and paste the id here.
+      "id": "REPLACE_WITH_KV_NAMESPACE_ID"
+    }
+  ]
+  // Secrets — set with: `wrangler secret put ETHERSCAN_API_KEY`
+  //   ETHERSCAN_API_KEY  (required for EVM chains)
+  //   TONCENTER_API_KEY  (optional)
+}
