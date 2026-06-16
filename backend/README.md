@@ -1,19 +1,19 @@
-# DeepTechX Tx Verifier (Cloudflare Worker)
+# DeepTechX Tx Submission Worker (Cloudflare)
 
-Verifies crypto payment submissions from the DeepTechX UI. Confirms the
-transaction exists on its chain and that the recipient is the configured
-treasury address. Logs each submission to a KV namespace for off-line
-reconciliation. No database or persistent server required.
+Logs crypto payment submissions from the DeepTechX UI to a Cloudflare KV
+namespace and (optionally) forwards them to a webhook for instant notification.
+The operator reconciles each submission against their wallet manually.
 
-## What it verifies
+## Why no on-chain verification
 
-- **EVM chains** (ETH, BSC, ERC-20 / BEP-20 tokens including USDC, USDT, WBTC)
-  via the Etherscan v2 multi-chain API (single API key works across all
-  supported EVM chains)
-- **TON** via toncenter.com (free tier works without a key)
+The UI exposes a single human-readable wallet handle (`desireyavro.x`)
+that resolves to many chains via Unstoppable Domains. The submission does
+not include a chain hint, so we can't reliably inspect a single explorer.
+Manual reconciliation against the wallet is both simpler and more accurate
+for a low-volume launch.
 
-It does **not** verify the USD/token-amount conversion — token prices are
-volatile and the operator reconciles manually using the audit log.
+If you later want automated verification, add a `chain` field to the
+submission payload (frontend) and a chain-specific verifier in the worker.
 
 ## One-time setup
 
@@ -22,12 +22,11 @@ cd backend
 npm install
 npx wrangler login                                # one-time browser auth
 npx wrangler kv namespace create SUBMISSIONS      # paste the id into wrangler.jsonc
-npx wrangler secret put ETHERSCAN_API_KEY         # get a free key at etherscan.io
-npx wrangler secret put TONCENTER_API_KEY         # optional
+npx wrangler secret put WEBHOOK_URL               # optional Slack/Discord URL
 ```
 
-Update `wrangler.jsonc` with the KV namespace `id` returned above and confirm
-`TREASURY_EVM` / `TREASURY_TON` match your live wallets.
+Open `wrangler.jsonc` and replace `REPLACE_WITH_KV_NAMESPACE_ID` with the id
+returned above.
 
 ## Run locally
 
@@ -45,15 +44,15 @@ npm run deploy
 
 ## Wire the frontend
 
-In the DeepTechX repo root, create a `.env.local` (already gitignored):
+In the DeepTechX repo root, create `.env.local` (already gitignored):
 
 ```
 VITE_VERIFY_TX_URL=https://deeptechx-tx-verifier.<your-subdomain>.workers.dev
 ```
 
-Restart `npm run dev`. The crypto checkout modal will now POST submissions to
-the Worker; without the env var it falls back to the optimistic UI flow
-(submission accepted, you reconcile by checking the wallet manually).
+Restart `npm run dev`. The wallet checkout will now POST submissions to the
+worker; without the env var it falls back to optimistic UX (submission shown
+as accepted, you reconcile by checking the wallet manually).
 
 ## Endpoint contract
 
@@ -63,31 +62,35 @@ the Worker; without the env var it falls back to the optimistic UI flow
 {
   "tier": "Lifetime Access",
   "amountUSD": 597,
-  "chain": "eth",           // ton | eth | bnb | usdc-eth | usdt-bsc | wbtc
-  "txHash": "0x…",
+  "wallet": "desireyavro.x",
+  "txHash": "0x… or tx ref",
   "email": "buyer@example.com"
 }
 ```
 
 Responses:
 
-- `200 { "status": "verified", "submissionId": "uuid" }` — tx mined, recipient matches
-- `202 { "status": "pending", "message": "tx not yet mined", "submissionId": "uuid" }` — submission logged, will reconcile
+- `200 { "status": "submitted", "submissionId": "uuid" }` — logged + webhook fired
 - `400 / 405` — malformed request
 
 ## Audit log
 
-Every submission (verified or pending) is stored in the `SUBMISSIONS` KV
-namespace for 90 days. Inspect via:
+Every submission is stored in the `SUBMISSIONS` KV namespace for 90 days.
 
 ```bash
 npx wrangler kv key list --binding=SUBMISSIONS
 npx wrangler kv key get <id> --binding=SUBMISSIONS
 ```
 
+## Webhook payload shape
+
+If `WEBHOOK_URL` is set, the same record is POSTed there with
+`Content-Type: application/json`. Works with Slack incoming webhooks
+(format the record into a Slack message in a Cloudflare worker chain or
+use Zapier), Discord, or Zapier.
+
 ## Next steps when you want them
 
-- Email delivery on verified payments (Resend / Mailgun)
-- USD/token amount enforcement using a Pyth or CoinGecko spot price
+- Email delivery on submission (Resend / Mailgun)
+- Per-chain automated verification (add `chain` to payload)
 - Rate limit + Turnstile to block submission abuse
-- Slack / Discord webhook on each verified submission
