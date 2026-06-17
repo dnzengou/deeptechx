@@ -9,7 +9,7 @@ import {
   FileText, BookOpen, ScrollText, GraduationCap, Clock,
   ChevronDown, ChevronRight, Award, AlertCircle, ExternalLink,
   HelpCircle, FlaskConical, RotateCcw, Sparkles,
-  CreditCard, Bitcoin, Copy, Check, Wallet
+  CreditCard, Copy, Check, Wallet
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { CardTitle } from '@/components/ui/card'
@@ -1306,7 +1306,12 @@ type Tier = {
   cardLink: string
 }
 
-const BMaC_URL = 'https://buymeacoffee.com/yavro'
+// Stripe Payment Links — create at dashboard.stripe.com/payment-links and paste here.
+const STRIPE_LINKS = {
+  lifetime: 'https://buy.stripe.com/REPLACE_ME_LIFETIME',
+  nft: 'https://buy.stripe.com/REPLACE_ME_NFT',
+  monthly: 'https://buy.stripe.com/REPLACE_ME_MONTHLY',
+}
 
 const tiers: Tier[] = [
   {
@@ -1315,7 +1320,7 @@ const tiers: Tier[] = [
     features: ['All 14 modules', 'All 6 quizzes', 'Interactive calculators', 'Community access'],
     cta: 'Get Started',
     amountUSD: 597,
-    cardLink: BMaC_URL,
+    cardLink: STRIPE_LINKS.lifetime,
   },
   {
     name: 'NFT Edition', price: '$1,197', sub: 'One-time + NFT',
@@ -1324,7 +1329,7 @@ const tiers: Tier[] = [
     cta: 'Get NFT Edition',
     popular: true,
     amountUSD: 1197,
-    cardLink: BMaC_URL,
+    cardLink: STRIPE_LINKS.nft,
   },
   {
     name: 'Monthly Digest', price: '$67', priceSub: '/mo', sub: 'Cancel anytime',
@@ -1332,50 +1337,21 @@ const tiers: Tier[] = [
     features: ['Weekly insights', 'Market updates', 'Deal flow access', 'Expert interviews'],
     cta: 'Subscribe',
     amountUSD: 67,
-    cardLink: BMaC_URL,
+    cardLink: STRIPE_LINKS.monthly,
   },
 ]
 
-type CryptoOption = {
-  id: string
-  symbol: string
-  name: string
-  network: string
-  address: string
-  icon: typeof Bitcoin
-  color: string
-}
+// Single Web3 wallet handle — no per-chain branding. Buyer's wallet client
+// resolves desireyavro.x via Unstoppable Domains to the right underlying address.
+const WALLET_HANDLE = 'desireyavro.x'
 
-const EVM_ADDR = '0xB2c4D12e01Bb3edAb015FaA441FD04B566b186Ba'
-
-const cryptoOptions: CryptoOption[] = [
-  { id: 'ton', symbol: 'TON', name: 'Toncoin', network: 'TON Mainnet',
-    address: 'UQBvgWPdj9J7SUMQCJxHvVXTc6uNE10SbB2g1waTxrh_4liP', icon: Wallet, color: 'from-sky-500 to-blue-500' },
-  { id: 'eth', symbol: 'ETH', name: 'Ethereum', network: 'ERC-20',
-    address: EVM_ADDR, icon: Wallet, color: 'from-indigo-500 to-blue-500' },
-  { id: 'bnb', symbol: 'BNB', name: 'BNB Chain', network: 'BEP-20',
-    address: EVM_ADDR, icon: Wallet, color: 'from-yellow-500 to-amber-500' },
-  { id: 'usdc-eth', symbol: 'USDC', name: 'USD Coin', network: 'ERC-20',
-    address: EVM_ADDR, icon: Coins, color: 'from-blue-500 to-cyan-500' },
-  { id: 'usdt-bsc', symbol: 'USDT', name: 'Tether', network: 'BEP-20',
-    address: EVM_ADDR, icon: Coins, color: 'from-emerald-500 to-teal-500' },
-  { id: 'wbtc', symbol: 'WBTC', name: 'Wrapped BTC', network: 'ERC-20',
-    address: EVM_ADDR, icon: Bitcoin, color: 'from-orange-500 to-amber-500' },
-]
-
-function shortAddress(addr: string) {
-  if (addr.length <= 14) return addr
-  return `${addr.slice(0, 8)}…${addr.slice(-6)}`
-}
-
-function CopyAddressRow({ option }: { option: CryptoOption }) {
+function WalletReveal() {
+  const [revealed, setRevealed] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [reveal, setReveal] = useState(false)
-  const Icon = option.icon
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(option.address)
+      await navigator.clipboard.writeText(WALLET_HANDLE)
       setCopied(true)
       setTimeout(() => setCopied(false), 1800)
     } catch {
@@ -1383,36 +1359,41 @@ function CopyAddressRow({ option }: { option: CryptoOption }) {
     }
   }
 
-  return (
-    <div className="bg-white/5 border border-white/10 rounded-xl p-4 hover:border-white/20 transition">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-3">
-          <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${option.color} flex items-center justify-center`}>
-            <Icon className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <div className="text-white font-semibold text-sm">{option.symbol} <span className="text-white/40 font-normal">— {option.name}</span></div>
-            <div className="text-[10px] text-white/40 uppercase tracking-wider">{option.network}</div>
-          </div>
+  if (!revealed) {
+    return (
+      <button
+        onClick={() => setRevealed(true)}
+        className="group w-full bg-white/5 border border-white/10 rounded-2xl p-8 hover:border-white/30 hover:bg-white/[0.07] transition flex flex-col items-center justify-center gap-3"
+        aria-label="Reveal payment wallet"
+      >
+        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-600/40 to-pink-600/40 border border-white/10 flex items-center justify-center group-hover:scale-105 transition">
+          <Wallet className="w-7 h-7 text-white" />
         </div>
-        <button onClick={() => setReveal(!reveal)} className="text-[10px] text-white/40 hover:text-white/70 uppercase tracking-wider">
-          {reveal ? 'Hide' : 'Reveal'}
-        </button>
+        <div className="text-xs uppercase tracking-[0.2em] text-white/40 group-hover:text-white/60 transition">Tap to reveal wallet</div>
+      </button>
+    )
+  }
+
+  return (
+    <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
+      <div className="flex items-center justify-center mb-4">
+        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-600/40 to-pink-600/40 border border-white/10 flex items-center justify-center">
+          <Wallet className="w-6 h-6 text-white" />
+        </div>
       </div>
-      <div className="flex items-center gap-2 bg-black/30 border border-white/5 rounded-lg px-3 py-2.5 font-mono text-xs">
-        <span className="text-white/80 truncate flex-1 select-all">
-          {reveal ? option.address : shortAddress(option.address)}
-        </span>
+      <div className="flex items-center gap-2 bg-black/30 border border-white/5 rounded-lg px-4 py-3">
+        <span className="text-white text-sm font-mono flex-1 text-center select-all">{WALLET_HANDLE}</span>
         <button
           onClick={handleCopy}
           className={`shrink-0 flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold transition ${
             copied ? 'bg-green-500/20 text-green-300' : 'bg-white/10 text-white hover:bg-white/20'
           }`}
-          aria-label={`Copy ${option.symbol} address`}
+          aria-label="Copy wallet handle"
         >
           {copied ? <><Check className="w-3 h-3" /> Copied</> : <><Copy className="w-3 h-3" /> Copy</>}
         </button>
       </div>
+      <p className="text-[11px] text-white/40 text-center mt-3">Your wallet will resolve the handle to the right chain.</p>
     </div>
   )
 }
@@ -1421,7 +1402,6 @@ const VERIFY_TX_URL = (import.meta.env.VITE_VERIFY_TX_URL as string | undefined)
 
 function PaymentModal({ tier, open, onOpenChange }: { tier: Tier; open: boolean; onOpenChange: (v: boolean) => void }) {
   const [confirming, setConfirming] = useState(false)
-  const [chain, setChain] = useState<string>(cryptoOptions[0].id)
   const [email, setEmail] = useState('')
   const [txHash, setTxHash] = useState('')
   const [sent, setSent] = useState(false)
@@ -1429,6 +1409,10 @@ function PaymentModal({ tier, open, onOpenChange }: { tier: Tier; open: boolean;
   const [submitError, setSubmitError] = useState<string>('')
 
   const handleCardCheckout = () => {
+    if (!tier.cardLink || tier.cardLink.includes('REPLACE_ME')) {
+      alert('Stripe Payment Link not yet configured. Paste your real link into STRIPE_LINKS in src/App.tsx.')
+      return
+    }
     window.open(tier.cardLink, '_blank', 'noopener,noreferrer')
   }
 
@@ -1441,7 +1425,7 @@ function PaymentModal({ tier, open, onOpenChange }: { tier: Tier; open: boolean;
         const res = await fetch(VERIFY_TX_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ tier: tier.name, amountUSD: tier.amountUSD, chain, txHash: txHash.trim(), email: email.trim() }),
+          body: JSON.stringify({ tier: tier.name, amountUSD: tier.amountUSD, wallet: WALLET_HANDLE, txHash: txHash.trim(), email: email.trim() }),
         })
         if (!res.ok) {
           const text = await res.text().catch(() => '')
@@ -1459,7 +1443,7 @@ function PaymentModal({ tier, open, onOpenChange }: { tier: Tier; open: boolean;
   }
 
   const reset = () => {
-    setConfirming(false); setChain(cryptoOptions[0].id); setEmail(''); setTxHash('')
+    setConfirming(false); setEmail(''); setTxHash('')
     setSent(false); setSubmitting(false); setSubmitError('')
   }
 
@@ -1489,8 +1473,8 @@ function PaymentModal({ tier, open, onOpenChange }: { tier: Tier; open: boolean;
             <TabsTrigger value="card" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-white gap-2">
               <CreditCard className="w-4 h-4" /> Card
             </TabsTrigger>
-            <TabsTrigger value="crypto" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-white gap-2">
-              <Bitcoin className="w-4 h-4" /> Crypto
+            <TabsTrigger value="wallet" className="data-[state=active]:bg-purple-500/20 data-[state=active]:text-white gap-2">
+              <Wallet className="w-4 h-4" /> Wallet
             </TabsTrigger>
           </TabsList>
 
@@ -1499,34 +1483,26 @@ function PaymentModal({ tier, open, onOpenChange }: { tier: Tier; open: boolean;
               <div className="flex items-center gap-3 mb-3">
                 <CreditCard className="w-5 h-5 text-purple-400" />
                 <div>
-                  <div className="text-sm font-semibold text-white">Pay with Buy Me a Coffee</div>
-                  <div className="text-xs text-white/50">Card, Apple Pay, Google Pay · Stripe-secured</div>
+                  <div className="text-sm font-semibold text-white">Pay with Stripe</div>
+                  <div className="text-xs text-white/50">Card, Apple Pay, Google Pay, Link</div>
                 </div>
               </div>
               <p className="text-xs text-white/60 mb-4">
-                You'll be redirected to <span className="font-mono text-white/80">buymeacoffee.com/yavro</span>. Set the amount to <strong className="text-white">{tier.price}</strong> and include your email in the note so we can deliver access.
+                You'll be redirected to a secure Stripe-hosted checkout for <strong className="text-white">{tier.price}</strong>. Your card details never touch our servers.
               </p>
               <Button onClick={handleCardCheckout} className={`w-full bg-gradient-to-r ${tier.accent} gap-2`}>
-                Continue to Buy Me a Coffee <ExternalLink className="w-4 h-4" />
+                Continue to Stripe <ExternalLink className="w-4 h-4" />
               </Button>
             </div>
             <div className="flex items-center justify-center gap-3 text-[10px] text-white/40 uppercase tracking-wider">
-              <span>Stripe-Powered</span><span>·</span><span>3-D Secure</span><span>·</span><span>Encrypted</span>
+              <span>PCI DSS</span><span>·</span><span>3-D Secure</span><span>·</span><span>Encrypted</span>
             </div>
           </TabsContent>
 
-          <TabsContent value="crypto" className="mt-4 space-y-3">
+          <TabsContent value="wallet" className="mt-4 space-y-3">
             {!confirming ? (
               <>
-                <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 flex gap-2">
-                  <AlertCircle className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
-                  <div className="text-xs text-amber-100/80">
-                    Send <strong className="text-white">exactly {tier.price}</strong> worth of your chosen asset. Use the matching network — wrong network = lost funds. Submit your tx hash after sending.
-                  </div>
-                </div>
-                <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
-                  {cryptoOptions.map(opt => <CopyAddressRow key={opt.id} option={opt} />)}
-                </div>
+                <WalletReveal />
                 <Button onClick={() => setConfirming(true)} variant="outline" className="w-full border-white/20 text-white hover:bg-white/10 gap-2">
                   I've Sent the Payment <ArrowRight className="w-4 h-4" />
                 </Button>
@@ -1537,24 +1513,12 @@ function PaymentModal({ tier, open, onOpenChange }: { tier: Tier; open: boolean;
                   <CheckCircle className="w-7 h-7 text-white" />
                 </div>
                 <div className="font-bold text-white mb-1">Submitted!</div>
-                <p className="text-sm text-white/60 mb-4">We'll verify on-chain and email your access link within ~30 minutes.</p>
+                <p className="text-sm text-white/60 mb-4">We'll verify and email your access link within ~30 minutes.</p>
                 <Button onClick={() => onOpenChange(false)} className="bg-white/10 hover:bg-white/20">Close</Button>
               </div>
             ) : (
               <>
                 <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-3">
-                  <div>
-                    <label className="text-xs text-white/60 uppercase tracking-wider mb-1 block">Network</label>
-                    <select
-                      value={chain}
-                      onChange={(e) => setChain(e.target.value)}
-                      className="w-full bg-black/30 border border-white/10 rounded-md px-3 py-2 text-sm text-white focus:outline-none focus:border-purple-500/50"
-                    >
-                      {cryptoOptions.map(o => (
-                        <option key={o.id} value={o.id} className="bg-[#0a0a1a]">{o.symbol} — {o.name} ({o.network})</option>
-                      ))}
-                    </select>
-                  </div>
                   <div>
                     <label className="text-xs text-white/60 uppercase tracking-wider mb-1 block">Email</label>
                     <Input
@@ -1566,16 +1530,16 @@ function PaymentModal({ tier, open, onOpenChange }: { tier: Tier; open: boolean;
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-white/60 uppercase tracking-wider mb-1 block">Transaction Hash</label>
+                    <label className="text-xs text-white/60 uppercase tracking-wider mb-1 block">Transaction Reference</label>
                     <Input
                       value={txHash}
                       onChange={(e) => setTxHash(e.target.value)}
-                      placeholder="0x… or tx id"
+                      placeholder="Tx hash or reference"
                       className="bg-black/30 border-white/10 text-white placeholder:text-white/30 font-mono text-xs"
                     />
                   </div>
                   <p className="text-xs text-white/50">
-                    We'll confirm on-chain and email your access details. Make sure the tx is broadcast before submitting.
+                    We'll confirm and email your access details. Make sure the transaction has been broadcast before submitting.
                   </p>
                 </div>
                 {submitError && (
@@ -1966,7 +1930,7 @@ function App() {
                   <div className="mt-3 flex items-center justify-center gap-3 text-[10px] text-white/40">
                     <span className="flex items-center gap-1"><CreditCard className="w-3 h-3" /> Card</span>
                     <span>·</span>
-                    <span className="flex items-center gap-1"><Bitcoin className="w-3 h-3" /> Crypto</span>
+                    <span className="flex items-center gap-1"><Wallet className="w-3 h-3" /> Wallet</span>
                   </div>
                 </div>
               </div>
