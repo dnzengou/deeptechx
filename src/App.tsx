@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import './App.css'
 import {
-  Rocket, Brain, Shield, Coins, Bot, Lock, Zap,
-  Scale, Lightbulb, Orbit, TrendingUp, Layers, Target,
+  Rocket, Brain, Shield, Orbit, TrendingUp, Layers, Target,
   CheckCircle, Play, Calculator,
   MessageSquare, Menu, X, Star, ArrowRight,
   Briefcase, Plus, Trash2, Download,
@@ -22,72 +21,30 @@ import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 
 // ────────────────────────────────────────────────────────────────────
-//  MODULE DATA — Udemy course: "DeepTechX Launchpad"
+//  MODULE DATA — Space & DeepTech Commercialization Masterclass 2026
+//  Ready-to-deliver sections, sourced from the official syllabus.
 // ────────────────────────────────────────────────────────────────────
 const modules = [
-  { id: 'M01', title: 'System-Thinking Vetting & De-Hype', level: 'All', icon: Brain,
+  { id: 'M01', title: 'Space x DeepTech x HCD — Part 1', level: 'Foundational', icon: Brain,
     color: 'from-purple-500 to-pink-500', hasCalculator: true,
-    description: 'Apply human-centered design and commercial velocity frameworks to identify genuinely viable deep tech opportunities. Cut through hype with first-principles analysis.',
-    lectures: ['Human-Centered Design for Deep Tech Innovation: The Commercial Velocity Playbook'] },
-  { id: 'M02', title: 'Fast-Track Development Framework', level: 'Technical', icon: Zap,
-    color: 'from-blue-500 to-cyan-500', hasCalculator: true,
-    description: 'Launch your deep tech venture from scientist to scalable startup. Escape the expert trap using the 5-Steps Deep Tech Framework.',
-    lectures: ['Deep Tech Venture Launchpad — From Scientist to Scalable Startup', 'The Expert Trap & The 5-Steps Deep Tech Framework'] },
-  { id: 'M03', title: 'Regulatory-First Design', level: 'Specialist', icon: Shield,
-    color: 'from-emerald-500 to-teal-500', hasCalculator: false,
-    description: 'Navigate regulatory environments proactively. Build compliance as a competitive advantage, not a constraint, across space, health, and fintech sectors.',
-    lectures: [] },
-  { id: 'M04', title: 'Go-To-Market & Tokenomics', level: 'Business', icon: Coins,
-    color: 'from-green-500 to-emerald-500', hasCalculator: true,
-    description: 'Design tokenization strategies for real-world assets (RWAs) and craft go-to-market playbooks including strategic bitcoin reserve frameworks for emerging markets.',
-    lectures: ['Tokenomics and RWAs Tokenization Presentation', 'Stratégie Financière Africaine: Réserves de Bitcoin'] },
-  { id: 'M05', title: 'Building AI Agents for Deep Tech', level: 'Advanced', icon: Bot,
-    color: 'from-violet-500 to-purple-500', hasCalculator: false,
-    description: 'Build and deploy AI automation agencies tailored for deep tech workflows. Become the "Digital Operator" for your sector using local AI agent stacks.',
-    lectures: ['Local AI Automation Agency (The "Digital Operator")'] },
-  { id: 'M06', title: 'PQC & Quantum-Safe Systems', level: 'Specialist', icon: Lock,
-    color: 'from-orange-500 to-red-500', hasCalculator: true,
-    description: 'Master post-quantum cryptography and the Crypto Agility framework. Design quantum-safe systems before the Q-Day threat window closes.',
-    lectures: ['Post-Quantum Cryptography & Quantum-Safe Systems', 'The Crypto Agility Manifesto Presentation'] },
-  { id: 'M07', title: 'Nuclear + Fusion Energy', level: 'Specialist', icon: Zap,
-    color: 'from-yellow-500 to-orange-500', hasCalculator: false,
-    description: 'Analyze the commercialization pathway for nuclear and fusion energy ventures. Understand reactor economics, licensing hurdles, and the new energy investment landscape.',
-    lectures: [] },
-  { id: 'M08', title: 'Space Tech: From Project to Hero', level: 'Intrapreneur', icon: Rocket,
+    description: 'Bridge the Commercial Gap with Human-Centered Design. Treat HCD as a proxy for market acceptance and a velocity engine — from empathy to translation. Diagnose why 94% of deep tech ventures fail and apply the DFV trinity to your own.',
+    lectures: ['Space x Deep Tech HCD: The Velocity Engine — From Empathy to Translation'] },
+  { id: 'M02', title: 'Space x DeepTech x HCD — Part 2', level: 'Foundational', icon: Target,
+    color: 'from-fuchsia-500 to-purple-500', hasCalculator: true,
+    description: 'Master the HCD Velocity Flywheel, the HMW framework, and design-led strategies to accelerate regulatory approval. Reframe compliance as a usability requirement using the Regulatory Love Letter blueprint.',
+    lectures: ['Space x Deep Tech HCD: The Velocity Engine — From Iteration to Action Plan'] },
+  { id: 'M03', title: 'Space 4 Gaming', level: 'Vertical', icon: Orbit,
     color: 'from-cyan-500 to-blue-500', hasCalculator: true,
-    description: 'Commercialize EO and space data across healthcare, mobility, gaming, and logistics. Master EGNSS and Earth Observation startup playbooks for real-world market applications.',
-    lectures: [
-      'The Earth Observation Startup Playbook - Part 1',
-      'The Earth Observation Startup Playbook - Part 2',
-      'Space Technology in Healthcare — EGNSS In Healthcare',
-      'Space & Gaming: Why Space Tech-Enabled Gaming is More than a Game',
-      'Space and Gaming As a Category of Consumer Solutions',
-      'Bridging Space Technology with User Needs — EGNSS+EO Data for Mobility, Health, Logistics & Climate',
-    ] },
-  { id: 'M09', title: 'AI Ethics & Governance', level: 'All', icon: Scale,
-    color: 'from-indigo-500 to-violet-500', hasCalculator: false,
-    description: 'Navigate AI governance frameworks and boardroom statecraft in a multipolar world. Understand geopolitical drift and how it shapes deep tech strategy in 2026.',
-    lectures: ['Boardroom Statecraft 2026: Navigating the Global Drift'] },
-  { id: 'M10', title: 'Frugal Innovation', level: 'Entrepreneur', icon: Lightbulb,
-    color: 'from-amber-500 to-yellow-500', hasCalculator: false,
-    description: 'Apply resource-constrained innovation methodologies to build resilient deep tech ventures with outsized global impact and sovereign scalability.',
-    lectures: [] },
-  { id: 'M11', title: 'AI Agents in Space Tech', level: 'Advanced', icon: Orbit,
-    color: 'from-fuchsia-500 to-pink-500', hasCalculator: false,
-    description: 'Deploy autonomous AI agents across space technology workflows — from satellite operations and ground segment automation to mission planning and anomaly detection.',
-    lectures: [] },
-  { id: 'M12', title: 'Unit Economics & Sovereign Scaling', level: 'Business', icon: TrendingUp,
+    description: 'Capitalize on the $300B gaming convergence. Use Copernicus/Galileo data to power open-world games (downstream) and gaming engines to revolutionize space training (upstream). Monetize via Digital Twin as a Service and B2B training contracts.',
+    lectures: ['Space 4 Gaming: The $300B Opportunity'] },
+  { id: 'M04', title: 'Space 4 Healthcare', level: 'Vertical', icon: Shield,
+    color: 'from-emerald-500 to-teal-500', hasCalculator: false,
+    description: 'Build next-generation healthcare with EU space programs. Integrate the Android GNSS Raw Measurements API, achieve 30cm accuracy with dual-frequency (L1/E1 + L5/E5), and address the €400B GNSS market via the Cassini Initiative.',
+    lectures: ['EGNSS in Healthcare: From Satellites to Patients'] },
+  { id: 'M05', title: 'EO 4 Startup Business', level: 'Commercialization', icon: TrendingUp,
     color: 'from-lime-500 to-green-500', hasCalculator: true,
-    description: 'Model unit economics for deep tech ventures from seed to sovereign-level deployment. Build financial models that hold under real-world capital constraints.',
-    lectures: [] },
-  { id: 'M13', title: 'First-Principles + Systems Thinking', level: 'All', icon: Layers,
-    color: 'from-rose-500 to-red-500', hasCalculator: false,
-    description: 'Rebuild complex problems from scratch using first-principles reasoning and systems thinking maps. The mental foundation for every other module.',
-    lectures: [] },
-  { id: 'M14', title: 'Agentic Monetization & Unicorn Playbook', level: 'Founder', icon: Target,
-    color: 'from-sky-500 to-blue-500', hasCalculator: false,
-    description: 'Productize your expertise into scalable AI-powered consulting services. Learn the AI-powered consulting revolution and chart the path to unicorn exit.',
-    lectures: ['The AI-Powered Consulting Revolution', 'Consulting Productization Training — Productize Yourself!'] },
+    description: 'Go from Copernicus data to $10M ARR. Move from selling raw pixels to outcome-based insights. Master the team triad, beachhead market strategy, balanced capital stack, and AI-automated pipelines that scale.',
+    lectures: ['EO 4 Startup Business: From Copernicus Data to $10M ARR'] },
 ]
 
 // ────────────────────────────────────────────────────────────────────
@@ -99,91 +56,73 @@ type Section = { id: string; title: string; lessons: Lesson[] }
 
 const curriculumByModule: Record<string, Section[]> = {
   M01: [
-    { id: 's1', title: 'Introduction', lessons: [
-      { id: 'l1', title: 'Welcome & The De-Hype Mindset', duration: '6:42', type: 'video', preview: true },
-      { id: 'l2', title: 'Why 90% of Deep Tech Fails Commercialization', duration: '11:08', type: 'video' },
+    { id: 's1', title: 'The Velocity Engine', lessons: [
+      { id: 'l1', title: 'Space x Deep Tech HCD: The Velocity Engine — From Empathy to Translation', duration: '38:00', type: 'video', preview: true },
+      { id: 'l2', title: 'space_deeptech_x_hcd_part1.pdf — Presentation', duration: '32 slides', type: 'reading' },
     ]},
-    { id: 's2', title: 'Human-Centered Design for Deep Tech', lessons: [
-      { id: 'l3', title: 'The Commercial Velocity Playbook', duration: '18:24', type: 'video' },
-      { id: 'l4', title: 'TRL vs CRL: The Missing Half', duration: '12:55', type: 'video' },
-      { id: 'l5', title: 'Reading: First-Principles Decomposition', duration: '7 min read', type: 'reading' },
+    { id: 's2', title: 'Templates & Tools', lessons: [
+      { id: 'l3', title: 'HCD_VELOCITY_CANVAS.pdf', duration: 'template', type: 'lab' },
+      { id: 'l4', title: 'DFV_SCORECARD.pdf', duration: 'template', type: 'lab' },
+      { id: 'l5', title: 'HMW_STATEMENT_CALCULATOR.pdf', duration: 'template', type: 'lab' },
+      { id: 'l6', title: 'DeepTech_HCD_Aidevlab_Case_Light.pdf', duration: 'case study', type: 'reading' },
+      { id: 'l7', title: '4-PHASE_EXPERIENTIAL_INTERVIEW_SCRIPT.pdf', duration: 'template', type: 'lab' },
     ]},
-    { id: 's3', title: 'Apply: De-Hype Scoreboard', lessons: [
-      { id: 'l6', title: 'Hands-on: Score Your Tech', duration: '15:00', type: 'lab' },
-      { id: 'l7', title: 'Module 1 Quiz', duration: '5 questions', type: 'quiz' },
+    { id: 's3', title: 'Assessment', lessons: [
+      { id: 'l8', title: 'Module 1 Quiz', duration: '5 questions', type: 'quiz' },
     ]},
   ],
   M02: [
-    { id: 's1', title: 'The Expert Trap', lessons: [
-      { id: 'l1', title: 'Why Scientists Get Stuck', duration: '9:30', type: 'video', preview: true },
-      { id: 'l2', title: 'The 5-Steps Deep Tech Framework', duration: '22:15', type: 'video' },
+    { id: 's1', title: 'From Iteration to Action Plan', lessons: [
+      { id: 'l1', title: 'Space x Deep Tech HCD: The Velocity Engine — From Iteration to Action Plan', duration: '42:00', type: 'video', preview: true },
+      { id: 'l2', title: 'space_deeptech_x_hcd_part2.pdf — Presentation', duration: '38 slides', type: 'reading' },
     ]},
-    { id: 's2', title: 'From Scientist to Scalable Startup', lessons: [
-      { id: 'l3', title: 'Deep Tech Venture Launchpad', duration: '28:40', type: 'video' },
-      { id: 'l4', title: '90-Day MVP Sprint Methodology', duration: '14:20', type: 'video' },
-      { id: 'l5', title: 'Lab: Build Your Sprint', duration: '20:00', type: 'lab' },
+    { id: 's2', title: 'The Regulatory Love Letter Blueprint', lessons: [
+      { id: 'l3', title: 'HCD_REGULATORY_LOVE_LETTER_BLUEPRINT.pdf', duration: 'blueprint', type: 'reading' },
+      { id: 'l4', title: 'HCD_EMPATHY_MAP & PERSONA_PROFILE.pdf', duration: 'template', type: 'lab' },
     ]},
     { id: 's3', title: 'Assessment', lessons: [
-      { id: 'l6', title: 'Module 2 Quiz', duration: '5 questions', type: 'quiz' },
+      { id: 'l5', title: 'Module 2 Quiz', duration: '5 questions', type: 'quiz' },
+    ]},
+  ],
+  M03: [
+    { id: 's1', title: 'The $300B Opportunity', lessons: [
+      { id: 'l1', title: 'Space 4 Gaming: The $300B Opportunity', duration: '45:00', type: 'video', preview: true },
+      { id: 'l2', title: 'Space_and_Gaming.pdf — Presentation', duration: '52 slides', type: 'reading' },
+    ]},
+    { id: 's2', title: 'Audio & Supplementary', lessons: [
+      { id: 'l3', title: 'Satellites and Reality Unleashed (audiobook)', duration: '1h 12m', type: 'reading' },
+      { id: 'l4', title: 'space4water.pdf — Shared resource', duration: '24 pages', type: 'reading' },
+    ]},
+    { id: 's3', title: 'Assessment', lessons: [
+      { id: 'l5', title: 'Module 3 Graded Quiz', duration: '5 questions', type: 'quiz' },
     ]},
   ],
   M04: [
-    { id: 's1', title: 'Tokenomics Fundamentals', lessons: [
-      { id: 'l1', title: 'RWAs Tokenization Overview', duration: '16:10', type: 'video', preview: true },
-      { id: 'l2', title: 'Designing Sustainable Token Supply', duration: '19:45', type: 'video' },
+    { id: 's1', title: 'EGNSS for Healthcare', lessons: [
+      { id: 'l1', title: 'EGNSS in Healthcare: From Satellites to Patients', duration: '45:00', type: 'video', preview: true },
+      { id: 'l2', title: 'Space4Healthcare.pdf — Presentation', duration: '48 slides', type: 'reading' },
     ]},
-    { id: 's2', title: 'Strategic Bitcoin Reserves', lessons: [
-      { id: 'l3', title: 'Stratégie Financière Africaine: Réserves de Bitcoin', duration: '24:30', type: 'video' },
-      { id: 'l4', title: 'Sovereign Treasury Design Patterns', duration: '13:15', type: 'video' },
-    ]},
-    { id: 's3', title: 'Apply: Token Designer', lessons: [
-      { id: 'l5', title: 'Lab: Live Tokenomics Modeling', duration: '25:00', type: 'lab' },
-      { id: 'l6', title: 'Module 4 Quiz', duration: '5 questions', type: 'quiz' },
-    ]},
-  ],
-  M06: [
-    { id: 's1', title: 'The Q-Day Threat', lessons: [
-      { id: 'l1', title: 'Why PQC Matters Now', duration: '11:25', type: 'video', preview: true },
-      { id: 'l2', title: 'NIST PQC Standards Deep Dive', duration: '26:40', type: 'video' },
-    ]},
-    { id: 's2', title: 'The Crypto Agility Manifesto', lessons: [
-      { id: 'l3', title: 'Designing for Algorithm Rotation', duration: '17:30', type: 'video' },
-      { id: 'l4', title: 'Migration Patterns: Hybrid → Quantum-Safe', duration: '21:00', type: 'video' },
-    ]},
-    { id: 's3', title: 'Apply & Assess', lessons: [
-      { id: 'l5', title: 'Lab: Risk Calculator', duration: '15:00', type: 'lab' },
-      { id: 'l6', title: 'Module 6 Quiz', duration: '5 questions', type: 'quiz' },
-    ]},
-  ],
-  M08: [
-    { id: 's1', title: 'Earth Observation Startup Playbook', lessons: [
-      { id: 'l1', title: 'EO Playbook — Part 1', duration: '28:15', type: 'video', preview: true },
-      { id: 'l2', title: 'EO Playbook — Part 2', duration: '24:50', type: 'video' },
-    ]},
-    { id: 's2', title: 'EGNSS Vertical Applications', lessons: [
-      { id: 'l3', title: 'Space Technology in Healthcare', duration: '19:40', type: 'video' },
-      { id: 'l4', title: 'EGNSS+EO Data for Mobility, Health, Logistics & Climate', duration: '32:10', type: 'video' },
-    ]},
-    { id: 's3', title: 'Space + Gaming', lessons: [
-      { id: 'l5', title: 'Why Space Tech-Enabled Gaming is More than a Game', duration: '17:20', type: 'video' },
-      { id: 'l6', title: 'Consumer Solutions Category', duration: '14:55', type: 'video' },
-    ]},
-    { id: 's4', title: 'Apply & Assess', lessons: [
-      { id: 'l7', title: 'Lab: Launch Cost Calculator', duration: '12:00', type: 'lab' },
-      { id: 'l8', title: 'Module 8 Quiz', duration: '5 questions', type: 'quiz' },
-    ]},
-  ],
-  M14: [
-    { id: 's1', title: 'The AI-Powered Consulting Revolution', lessons: [
-      { id: 'l1', title: 'Productize Yourself', duration: '22:45', type: 'video', preview: true },
-      { id: 'l2', title: 'Agentic Monetization Patterns', duration: '18:30', type: 'video' },
-    ]},
-    { id: 's2', title: 'Consulting Productization Training', lessons: [
-      { id: 'l3', title: 'From Hourly to Productized', duration: '25:10', type: 'video' },
-      { id: 'l4', title: 'The Unicorn Playbook', duration: '27:00', type: 'video' },
+    { id: 's2', title: 'Implementation Reading', lessons: [
+      { id: 'l3', title: 'Android GNSS Raw Measurements API — Reading', duration: '12 min read', type: 'reading' },
+      { id: 'l4', title: 'Dual-Frequency L1/E1 + L5/E5 for 30cm Accuracy', duration: '8 min read', type: 'reading' },
     ]},
     { id: 's3', title: 'Assessment', lessons: [
-      { id: 'l5', title: 'Module 14 Quiz', duration: '5 questions', type: 'quiz' },
+      { id: 'l5', title: 'Module 4 Quiz', duration: '5 questions', type: 'quiz' },
+    ]},
+  ],
+  M05: [
+    { id: 's1', title: 'From Copernicus Data to $10M ARR', lessons: [
+      { id: 'l1', title: 'EO 4 Startup Business: From Copernicus Data to $10M ARR', duration: '50:00', type: 'video', preview: true },
+      { id: 'l2', title: 'EO4StartupBusiness.pdf — Presentation', duration: '64 slides', type: 'reading' },
+    ]},
+    { id: 's2', title: 'Business Lifecycle', lessons: [
+      { id: 'l3', title: 'The Team Triad: Technical, Commercial, Operational', duration: '10 min read', type: 'reading' },
+      { id: 'l4', title: 'Problem Discovery: From Data to Pains', duration: '8 min read', type: 'reading' },
+      { id: 'l5', title: 'MVP & Capital Stack Strategy', duration: '12 min read', type: 'reading' },
+      { id: 'l6', title: 'Beachhead → Scale to ARR', duration: '10 min read', type: 'reading' },
+    ]},
+    { id: 's3', title: 'Assessment', lessons: [
+      { id: 'l7', title: 'Module 5 Quiz', duration: '5 questions', type: 'quiz' },
     ]},
   ],
 }
@@ -195,107 +134,90 @@ type Question = { q: string; options: string[]; correct: number; explanation: st
 type Quiz = { moduleId: string; title: string; passingScore: number; questions: Question[] }
 
 const quizzes: Quiz[] = [
-  { moduleId: 'M01', title: 'De-Hype & Vetting Quiz', passingScore: 80, questions: [
-    { q: 'A founder pitches a quantum-AI cancer-fusion blockchain. Your first move is to:',
-      options: ['Invest immediately — buzzword density is high', 'Apply first-principles decomposition to isolate one real value vector', 'Wait for a tier-1 VC to lead', 'Ask the founder for a token whitepaper'],
-      correct: 1, explanation: 'First-principles decomposition — separate the actual physics or commercial reality from the hype stack.' },
-    { q: 'Which pair of readiness levels best diagnoses deep tech viability?',
-      options: ['MVP + LTV', 'TRL + CRL', 'CAC + ARR', 'IRR + NPV'],
-      correct: 1, explanation: 'TRL (Technology Readiness) and CRL (Commercial Readiness) together expose the gap most failed deep tech startups fall into.' },
-    { q: 'In the De-Hype Scoreboard, "Sovereign Risk" weights against the score because:',
-      options: ['VCs hate regulation', 'Permit/licence drag can extend timelines 3-7 years', 'It is required by SEC filing', 'It signals founder weakness'],
-      correct: 1, explanation: 'Sovereign and regulatory drag is the silent killer of deep tech — most founders underestimate licensing timelines.' },
-    { q: 'A "KILL IT" verdict means:',
-      options: ['Pivot the product immediately', 'Kill the venture and salvage the team', 'Continue but reduce budget', 'Get a second opinion only'],
-      correct: 1, explanation: 'When TRL+CRL are too low relative to risk and energy feasibility, the rational call is to redeploy team and capital.' },
-    { q: 'Commercial Velocity is best described as:',
-      options: ['How fast you can ship code', 'The compounding rate of customer-validated learning per dollar', 'Revenue / month', 'Team velocity in story points'],
-      correct: 1, explanation: 'Commercial Velocity captures the speed of validated learning — not output, but evidence of pull from the market.' },
+  { moduleId: 'M01', title: 'HCD Part 1: Velocity Engine Quiz', passingScore: 80, questions: [
+    { q: 'According to the syllabus, what percentage of deep tech companies fail, and what is the leading cause?',
+      options: ['50% — undercapitalization', '94% — design flaws, not technical infeasibility', '30% — regulatory issues', '70% — team conflict'],
+      correct: 1, explanation: 'The course opens with the stat that 94% of deep tech ventures fail, and these failures stem from design flaws (HCD gaps) more than technical infeasibility.' },
+    { q: 'What is the "Commercial Gap" that HCD bridges?',
+      options: ['Between funding rounds', 'Between technical feasibility and market viability', 'Between R&D and manufacturing', 'Between B2B and B2C'],
+      correct: 1, explanation: 'HCD is treated as a proxy for market acceptance — it closes the gap between "the tech works" and "someone will pay for it".' },
+    { q: 'The DFV Trinity stands for:',
+      options: ['Data, Funding, Validation', 'Desirability, Feasibility, Viability', 'Delivery, Finance, Volume', 'Design, Function, Value'],
+      correct: 1, explanation: 'DFV — Desirability (do users want it?), Feasibility (can we build it?), Viability (does it sustain a business?). All three are required for commercial velocity.' },
+    { q: 'In the HCD Velocity Engine, "Empathy" precedes "Translation" because:',
+      options: ['It is faster', 'You can\'t translate what you have not first understood from the user', 'Marketing demands it', 'Investors prefer it'],
+      correct: 1, explanation: 'Empathy gives you the raw user truth; translation converts it into a buildable, sellable product. Translation without empathy = HiPPO-driven product death.' },
+    { q: 'A "How Might We" (HMW) statement is most powerful when it:',
+      options: ['Names a specific feature', 'Frames a user problem broadly enough to spark options yet narrowly enough to act', 'Includes pricing', 'Targets investors'],
+      correct: 1, explanation: 'HMW statements are intentionally framed broad-but-actionable — broad enough to keep solution space open, narrow enough to drive ideation.' },
   ]},
-  { moduleId: 'M02', title: 'Fast-Track Framework Quiz', passingScore: 80, questions: [
-    { q: 'The "Expert Trap" is when a deep tech founder:',
-      options: ['Hires only PhDs', 'Optimizes for technical elegance over commercial pull', 'Refuses to pivot', 'Takes too long to fundraise'],
-      correct: 1, explanation: 'The trap is mistaking technical sophistication for commercial value — the market does not buy elegance.' },
-    { q: 'Step 1 of the 5-Step Deep Tech Framework is:',
-      options: ['Build the MVP', 'Define the deployable real-world bottleneck', 'Raise a seed round', 'Hire a CTO'],
-      correct: 1, explanation: 'Every successful deep tech venture starts by precisely defining the bottleneck their tech removes from a real workflow.' },
-    { q: 'In a 90-day MVP sprint, what is the single most important output?',
-      options: ['A working prototype', 'A signed LOI or pilot agreement', 'A pitch deck', 'A patent filing'],
-      correct: 1, explanation: 'A signed LOI/pilot proves CRL movement — far more valuable than a prototype no customer has touched.' },
-    { q: 'Sprint Week 12 should produce:',
-      options: ['Final product launch', 'Investor demo + customer evidence pack', 'Hire 10 engineers', 'New whitepaper'],
-      correct: 1, explanation: 'Week 12 is decision week — package the evidence for the next funding gate.' },
-    { q: 'Fast-track does NOT mean:',
-      options: ['Cutting corners on safety or compliance', 'Compressing the validation loop', 'Concurrent regulatory and product work', 'Sprinting toward customer evidence'],
-      correct: 0, explanation: 'Fast-track compresses learning loops, not safety or compliance — those remain non-negotiable.' },
+  { moduleId: 'M02', title: 'HCD Part 2: Iteration & Action Plan Quiz', passingScore: 80, questions: [
+    { q: 'The "Regulatory Love Letter" blueprint reframes compliance as:',
+      options: ['A cost center', 'A usability requirement', 'A marketing channel', 'A legal obligation only'],
+      correct: 1, explanation: 'The blueprint treats regulation as a user with needs — meet those needs early and approval accelerates instead of dragging.' },
+    { q: 'In the HCD Velocity Flywheel, what makes the loop accelerate over time?',
+      options: ['Bigger budgets', 'Each iteration generates evidence that compounds buyer trust and team conviction', 'More headcount', 'PR campaigns'],
+      correct: 1, explanation: 'The flywheel compounds because every validated iteration de-risks the next — evidence accumulates and momentum grows non-linearly.' },
+    { q: 'Empathy maps + persona profiles are most useful for:',
+      options: ['Marketing copy only', 'Aligning the team on a shared, specific picture of the user before designing', 'Investor decks', 'Legal compliance'],
+      correct: 1, explanation: 'Their primary job is alignment — without a shared user picture, the team builds for imaginary buyers.' },
+    { q: 'A common failure pattern HCD Part 2 warns against is:',
+      options: ['Talking to too many users', 'Iterating without measuring against DFV criteria', 'Building in public', 'Open-sourcing too early'],
+      correct: 1, explanation: 'Iteration without DFV measurement is motion without progress — you ship versions, not value.' },
+    { q: 'An effective deep tech action plan ends each cycle with:',
+      options: ['A demo video', 'A user-validated learning + a next-iteration hypothesis', 'A press release', 'A patent filing'],
+      correct: 1, explanation: 'The output of every HCD cycle is learning + the next hypothesis to test — that is what feeds the flywheel.' },
   ]},
-  { moduleId: 'M04', title: 'Tokenomics & GTM Quiz', passingScore: 80, questions: [
-    { q: 'RWA tokenization adds value primarily by:',
-      options: ['Making assets more volatile', 'Reducing settlement time and fractionalizing access', 'Avoiding regulation', 'Replacing equity'],
-      correct: 1, explanation: 'RWA tokenization unlocks liquidity and fractional ownership — speed + accessibility, not regulatory arbitrage.' },
-    { q: 'A sovereign Bitcoin reserve hedges against:',
-      options: ['Inflation in local fiat', 'Tech disruption', 'Climate risk', 'Demographic decline'],
-      correct: 0, explanation: 'The core thesis: BTC reserves protect sovereign treasuries from fiat debasement and FX shock.' },
-    { q: 'Healthy vesting design for founders and team typically spans:',
-      options: ['0-6 months', '12-48 months with cliff', 'Lifetime', 'Vesting is optional'],
-      correct: 1, explanation: '12-48 month vesting with a 12-month cliff aligns long-term commitment and reduces dump risk.' },
-    { q: 'Revenue-share token models work when:',
-      options: ['Token is purely speculative', 'There is real protocol cashflow to distribute', 'Team retains 80% of supply', 'There is no audit'],
-      correct: 1, explanation: 'Revenue-share tokens need actual cashflow — otherwise they are securities with no backing.' },
-    { q: 'The first GTM move for a tokenized RWA platform should be:',
-      options: ['Mass marketing', 'Anchor a single institutional issuer + regulator dialogue', 'Airdrop to retail', 'List on a DEX'],
-      correct: 1, explanation: 'Anchor issuer + regulator alignment de-risks every subsequent move — it is the only durable GTM.' },
+  { moduleId: 'M03', title: 'Space 4 Gaming Quiz', passingScore: 80, questions: [
+    { q: 'How large is the gaming industry according to the syllabus, and how does it compare to film + music?',
+      options: ['$50B — smaller than film', '$188.8B — larger than film and music combined', '$10B — niche segment', '$500B — equal to film'],
+      correct: 1, explanation: 'The $188.8B gaming industry already surpasses film and music combined — that is why it is a serious convergence target for space tech.' },
+    { q: 'The "Downstream Revolution" in Space 4 Gaming refers to:',
+      options: ['Esports broadcasting', 'Using satellite imagery (Sentinel-2) and precise positioning (Galileo) to power open-world games and AR', 'Game-stream subscriptions', 'Cloud gaming infrastructure'],
+      correct: 1, explanation: 'Downstream = using space data to enrich games. Copernicus/Galileo data lets developers build realistic open worlds at a fraction of hand-crafted asset cost.' },
+    { q: 'The "Upstream Advantage" works in the opposite direction:',
+      options: ['Gaming engines (Unity/Unreal) revolutionize astronaut training, cutting training time by ~40%', 'Games fund satellite launches', 'Players design satellites', 'AR replaces simulators'],
+      correct: 0, explanation: 'Upstream = gaming tech helps space. Game engines compress training time by ~40% and reduce error rates by ~60% per the syllabus.' },
+    { q: 'A "Digital Twin as a Service" monetization pathway is attractive because:',
+      options: ['It avoids regulation', 'It produces recurring B2B revenue from defence/aerospace training contracts', 'It targets consumers only', 'It needs no satellite data'],
+      correct: 1, explanation: 'DTaaS sells planetary-scale simulation as a subscription — predictable recurring revenue from B2B buyers who can pay.' },
+    { q: 'The "Phygital" economy described in HCD applied to gaming refers to:',
+      options: ['Physical-only products', 'Business models where physical+digital experiences fund real-world conservation or climate impact', 'Cryptocurrency mining', 'NFT-only platforms'],
+      correct: 1, explanation: 'Phygital = physical + digital. Gamification techniques fund real-world climate/conservation outcomes — moving beyond pure entertainment.' },
   ]},
-  { moduleId: 'M06', title: 'PQC & Quantum-Safe Quiz', passingScore: 80, questions: [
-    { q: 'Q-Day refers to:',
-      options: ['Quarter-end day for VCs', 'The day a cryptographically-relevant quantum computer exists', 'Token launch day', 'Q1 review day'],
-      correct: 1, explanation: 'Q-Day is when CRQC capability lands — and prior "harvest now, decrypt later" attacks become realized.' },
-    { q: 'Crypto Agility means:',
-      options: ['Rotating coins fast', 'System ability to swap cryptographic primitives without re-architecting', 'Using only ECC', 'Storing keys in HSM'],
-      correct: 1, explanation: 'Crypto agility is the architectural property — algorithms become plug-in, not load-bearing.' },
-    { q: 'Which is a NIST-standardized PQC signature scheme?',
-      options: ['RSA-4096', 'SLH-DSA', 'Curve25519', 'ChaCha20'],
-      correct: 1, explanation: 'SLH-DSA (formerly SPHINCS+) is a NIST-standardized hash-based signature.' },
-    { q: 'The recommended first migration step for a large estate is:',
-      options: ['Replace all certificates overnight', 'Build a cryptographic asset inventory', 'Ignore until Q-Day', 'Wait for vendor mandates'],
-      correct: 1, explanation: 'You cannot migrate what you cannot see — inventory first, then prioritize by exposure.' },
-    { q: 'Hybrid mode (classical + PQC) is preferred during transition because:',
-      options: ['It is cheaper', 'It provides defense-in-depth and graceful fallback', 'PQC is broken', 'Classical is faster'],
-      correct: 1, explanation: 'Hybrid gives you both worlds — classical certainty and PQC future-proofing, with fallback if a PQC algo is broken.' },
+  { moduleId: 'M04', title: 'Space 4 Healthcare Quiz', passingScore: 80, questions: [
+    { q: 'The EU Space Ecosystem covered in this module includes:',
+      options: ['Only Galileo', 'Five interconnected programs including Galileo, EGNOS, and Copernicus', 'NASA programs', 'Russian Glonass'],
+      correct: 1, explanation: 'The module covers five interconnected EU programs — navigation (Galileo), safety-critical augmentation (EGNOS), Earth observation (Copernicus), and others.' },
+    { q: 'A key Galileo differentiator vs other GNSS is:',
+      options: ['It is free for governments only', '20cm accuracy and signal authentication', 'It only works in Europe', 'It uses unlicensed spectrum'],
+      correct: 1, explanation: 'Galileo delivers 20cm accuracy and — critically — signal authentication, which other constellations lack. Authentication matters for safety-critical healthcare use cases.' },
+    { q: 'Using the Android GNSS Raw Measurements API with dual-frequency (L1/E1 + L5/E5) enables:',
+      options: ['Voice calling', '30cm accuracy in mobile apps', 'Cellular fallback', 'Wifi triangulation'],
+      correct: 1, explanation: 'Dual-frequency access via the raw measurements API gives developer apps ~30cm position accuracy — enough for medical drone routing and telemedicine geo-attestation.' },
+    { q: 'The global GNSS market size highlighted in this module is approximately:',
+      options: ['€10 billion', '€400 billion', '€50 billion', '€1 trillion'],
+      correct: 1, explanation: 'The €400B global GNSS market is the addressable opportunity — healthcare is one of seven vertical applications examined.' },
+    { q: 'For entrepreneurs in this space, the named funding pathway is:',
+      options: ['SBIR only', 'The Cassini Initiative', 'NSF grants', 'Crowdfunding'],
+      correct: 1, explanation: 'The Cassini Initiative is the EU funding vehicle highlighted for space-tech entrepreneurs building on Galileo/EGNOS/Copernicus.' },
   ]},
-  { moduleId: 'M08', title: 'Space Tech Commercialization Quiz', passingScore: 80, questions: [
-    { q: 'The first commercial trap in Earth Observation is:',
-      options: ['Selling pixels instead of decisions', 'Pricing too high', 'Launching too many satellites', 'Hiring too few engineers'],
-      correct: 0, explanation: 'EO startups die selling imagery; they survive selling decisions and outcomes.' },
-    { q: 'EGNSS in healthcare primarily enables:',
-      options: ['Faster MRIs', 'Time-stamped, geo-authenticated medical events and logistics', 'Cheaper drugs', 'New surgeries'],
-      correct: 1, explanation: 'Precise, authenticated time/location stamps unlock cold-chain, telemedicine, and clinical trial integrity.' },
-    { q: 'Space-enabled gaming is a real category because:',
-      options: ['Players love rockets', 'Real-world EO + position data create persistent, sovereign-state-aware game economies', 'NASA funds games', 'It is cheaper than AAA'],
-      correct: 1, explanation: 'Live planetary data turns games into living simulations — a moat AAA studios cannot replicate.' },
-    { q: 'The fastest path from project to product in space tech is:',
-      options: ['Build your own constellation first', 'Use existing constellations + monetize an application layer', 'Wait for a big contract', 'Buy a satellite'],
-      correct: 1, explanation: 'App-layer plays compound faster than hardware — focus capex on differentiation, not the bus.' },
-    { q: 'When pricing EO insights, anchor to:',
-      options: ['Cost-plus margin', 'Value of the decision unlocked for the customer', 'Competitor pricing', 'Sensor cost'],
-      correct: 1, explanation: 'Value-based pricing aligns with how the customer measures ROI — never sell on cost.' },
-  ]},
-  { moduleId: 'M14', title: 'Agentic Monetization Quiz', passingScore: 80, questions: [
-    { q: 'Productizing consulting means:',
-      options: ['Charging more per hour', 'Packaging repeatable expertise into agent-augmented assets', 'Hiring more juniors', 'Going IPO'],
-      correct: 1, explanation: 'You decouple revenue from time by turning expertise into agent-backed, reusable products.' },
-    { q: 'The unicorn playbook for solo deep tech experts hinges on:',
-      options: ['Joining a Big-4 firm', 'Agent leverage + niche dominance + sovereign distribution', 'Posting on LinkedIn daily', 'Buying ads'],
-      correct: 1, explanation: 'Agent leverage compounds expertise; niche + sovereign reach gives a defensible position.' },
-    { q: 'The first revenue gate for a productized consulting offer is:',
-      options: ['10 paying customers at the productized price point', '1 LinkedIn post', '1M website visits', 'A book deal'],
-      correct: 0, explanation: '10 paying customers prove the product fits the niche — only then scale agent infrastructure.' },
-    { q: 'Agentic monetization is NOT:',
-      options: ['Replacing humans entirely on every job', 'Multiplying a single expert across many deliverables', 'Compressing service delivery time', 'Lowering marginal cost per delivery'],
-      correct: 0, explanation: 'Agentic monetization augments expert leverage — it does not aim to fully replace the expert.' },
-    { q: 'When pricing productized consulting:',
-      options: ['Match Upwork rates', 'Price to the value of the outcome, not the input hours', 'Discount for early customers always', 'Match competitor SaaS'],
-      correct: 1, explanation: 'Value pricing aligns the offer to the buyer\'s ROI — hourly thinking caps your ceiling.' },
+  { moduleId: 'M05', title: 'EO 4 Startup Business Quiz', passingScore: 80, questions: [
+    { q: 'The most important early hire structure in an EO startup is:',
+      options: ['Lone genius founder', 'A diverse triad: technical + commercial + operational', 'All technical PhDs', 'All sales people'],
+      correct: 1, explanation: 'The course explicitly debunks the lone-genius myth — the triad (technical + commercial + operational) prevents burnout and covers the actual scope of building a business.' },
+    { q: 'In problem discovery, founders are instructed to focus on:',
+      options: ['Selling the data they already have', 'User pains, not just available data', 'Investor demands', 'Competitor features'],
+      correct: 1, explanation: 'Start from user pain, not from your data inventory. Design thinking is the recommended methodology for problem-solution fit.' },
+    { q: 'The recommended MVP approach is:',
+      options: ['Polished, production-ready build', '"Quick and dirty" + no-code to gather user feedback fast', 'Wait for series A then build', 'Hire a contractor'],
+      correct: 1, explanation: 'Speed and validation > technical perfection. No-code + scrappy MVPs gather immediate feedback at low cost.' },
+    { q: 'A balanced "capital stack" for EO startups should combine:',
+      options: ['Only VC', 'VC + grants + customer revenue, preserving equity and using non-dilutive funding early', 'Only customer revenue', 'Only government grants'],
+      correct: 1, explanation: 'The capital stack combines VC, grants, and customer revenue — non-dilutive sources protect equity in early stages.' },
+    { q: 'The go-to-market strategy advocated is:',
+      options: ['Diversify across many markets', 'Conquer a narrow "beachhead" niche completely before expanding', 'Mass-market launch', 'B2C only'],
+      correct: 1, explanation: 'Beachhead strategy wins — pick one narrow segment, dominate it, then expand. Premature diversification dilutes resources.' },
   ]},
 ]
 
@@ -306,36 +228,57 @@ type ResourceType = 'whitepaper' | 'ebook' | 'memo' | 'template' | 'dataset'
 type Resource = { id: string; title: string; type: ResourceType; description: string; size: string; pages?: number; tag: string }
 
 const resources: Resource[] = [
-  { id: 'r1', title: 'The Crypto Agility Manifesto', type: 'whitepaper',
-    description: 'A 2026 framework for designing quantum-safe systems before Q-Day. Covers NIST PQC selection, hybrid migration patterns, and crypto asset inventory.',
-    size: '2.4 MB', pages: 38, tag: 'PQC' },
-  { id: 'r2', title: 'Earth Observation Startup Playbook', type: 'ebook',
-    description: 'Two-part guide: from pixel-to-decision pricing, anchor customer playbooks, and vertical commercialization patterns across health, mobility, climate.',
-    size: '5.1 MB', pages: 84, tag: 'Space' },
-  { id: 'r3', title: 'Stratégie Financière Africaine: Réserves de Bitcoin', type: 'whitepaper',
-    description: 'Strategic Bitcoin reserve framework for African sovereign treasuries. Hedge, custody, and policy design.',
-    size: '3.2 MB', pages: 46, tag: 'Tokenomics' },
-  { id: 'r4', title: 'Boardroom Statecraft 2026', type: 'memo',
-    description: 'Executive briefing on geopolitical drift, AI governance, and how multipolarity reshapes deep tech strategy.',
-    size: '1.1 MB', pages: 18, tag: 'Governance' },
-  { id: 'r5', title: 'Tokenomics & RWAs Tokenization', type: 'whitepaper',
-    description: 'Design patterns for sustainable token economies and real-world asset tokenization architectures.',
-    size: '2.8 MB', pages: 52, tag: 'Tokenomics' },
-  { id: 'r6', title: 'The 5-Steps Deep Tech Framework', type: 'ebook',
-    description: 'The complete playbook for escaping the expert trap and shipping from scientist to scalable startup in 90 days.',
-    size: '4.3 MB', pages: 72, tag: 'Framework' },
-  { id: 'r7', title: '90-Day MVP Sprint Template', type: 'template',
-    description: 'Editable sprint planning template with weekly goals, evidence checklists, and investor-ready milestones.',
-    size: '480 KB', tag: 'Template' },
-  { id: 'r8', title: 'De-Hype Scoreboard Dataset', type: 'dataset',
-    description: 'Anonymized scoring data across 200+ deep tech startups (2022-2026). Use for benchmarking and pattern analysis.',
-    size: '12 MB', tag: 'Data' },
-  { id: 'r9', title: 'Local AI Automation Agency Stack', type: 'ebook',
-    description: 'Step-by-step build of the "Digital Operator" — local AI agent stack for deep tech workflows.',
-    size: '3.7 MB', pages: 64, tag: 'AI Agents' },
-  { id: 'r10', title: 'EGNSS Vertical Application Catalog', type: 'whitepaper',
-    description: 'Catalog of EGNSS+EO use cases across healthcare, mobility, logistics, gaming, and climate.',
-    size: '2.1 MB', pages: 36, tag: 'Space' },
+  // ── HCD Part 1 — Templates & deck
+  { id: 'r1', title: 'space_deeptech_x_hcd_part1.pdf', type: 'whitepaper',
+    description: 'Full presentation deck for Module 1: HCD Velocity Engine — from empathy to translation. Includes DFV trinity, Commercial Gap analysis, and case applications.',
+    size: '3.8 MB', pages: 32, tag: 'HCD · M01' },
+  { id: 'r2', title: 'HCD_VELOCITY_CANVAS.pdf', type: 'template',
+    description: 'Printable canvas to map your venture across desirability, feasibility and viability. Used directly in the Module 1 lab.',
+    size: '420 KB', tag: 'Template · M01' },
+  { id: 'r3', title: 'DFV_SCORECARD.pdf', type: 'template',
+    description: 'Desirability-Feasibility-Viability scorecard for quick gating decisions on early-stage deep tech ideas.',
+    size: '380 KB', tag: 'Template · M01' },
+  { id: 'r4', title: 'HMW_STATEMENT_CALCULATOR.pdf', type: 'template',
+    description: 'How-Might-We framing tool — convert raw user pains into actionable problem statements.',
+    size: '290 KB', tag: 'Template · M01' },
+  { id: 'r5', title: 'DeepTech_HCD_Aidevlab_Case_Light.pdf', type: 'memo',
+    description: 'Lightweight case study showing HCD applied end-to-end in a real deep tech / AI deve lab context.',
+    size: '1.6 MB', pages: 18, tag: 'Case Study · M01' },
+  { id: 'r6', title: '4-PHASE_EXPERIENTIAL_INTERVIEW_SCRIPT.pdf', type: 'template',
+    description: 'Field-tested user interview script covering empathy, jobs-to-be-done, pain mapping, and willingness-to-pay signals.',
+    size: '510 KB', tag: 'Template · M01' },
+
+  // ── HCD Part 2 — Regulatory & empathy
+  { id: 'r7', title: 'space_deeptech_x_hcd_part2.pdf', type: 'whitepaper',
+    description: 'Module 2 deck: the HCD Velocity Flywheel, iteration loops, and converting validated learning into an action plan.',
+    size: '4.2 MB', pages: 38, tag: 'HCD · M02' },
+  { id: 'r8', title: 'HCD_REGULATORY_LOVE_LETTER_BLUEPRINT.pdf', type: 'whitepaper',
+    description: 'The Regulatory Love Letter blueprint — reframe compliance as a usability requirement and accelerate approval timelines.',
+    size: '2.3 MB', pages: 24, tag: 'Compliance · M02' },
+  { id: 'r9', title: 'HCD_EMPATHY_MAP & PERSONA_PROFILE.pdf', type: 'template',
+    description: 'Combined empathy map and persona profile template to align cross-functional teams on a shared user picture.',
+    size: '470 KB', tag: 'Template · M02' },
+
+  // ── Space 4 Gaming
+  { id: 'r10', title: 'Space_and_Gaming.pdf', type: 'whitepaper',
+    description: 'Module 3 deck: the $300B convergence opportunity. Covers downstream (satellite-powered worlds) and upstream (gaming engines for training) plays.',
+    size: '6.4 MB', pages: 52, tag: 'Space · M03' },
+  { id: 'r11', title: 'Satellites and Reality Unleashed — Audiobook', type: 'ebook',
+    description: 'Companion audiobook to Module 3. Listen to the case for space-tech-enabled gaming as a new consumer category.',
+    size: '52 MB', tag: 'Audio · M03' },
+  { id: 'r12', title: 'space4water.pdf', type: 'whitepaper',
+    description: 'Shared reference: applying space data to water security. Cross-referenced from Module 3 as a parallel vertical model.',
+    size: '2.1 MB', pages: 24, tag: 'Reference · M03' },
+
+  // ── Space 4 Healthcare
+  { id: 'r13', title: 'Space4Healthcare.pdf', type: 'whitepaper',
+    description: 'Module 4 deck: integrating Galileo, EGNOS, and Copernicus into healthcare. Covers the Android GNSS API, dual-frequency accuracy, and 7 real-world use cases.',
+    size: '5.7 MB', pages: 48, tag: 'Space · M04' },
+
+  // ── EO 4 Startup Business
+  { id: 'r14', title: 'EO4StartupBusiness.pdf', type: 'whitepaper',
+    description: 'Module 5 deck: from Copernicus data to $10M ARR. Team triad, problem discovery, MVP, capital stack, beachhead GTM, and scaling.',
+    size: '7.2 MB', pages: 64, tag: 'EO · M05' },
 ]
 
 const resourceMeta: Record<ResourceType, { label: string; icon: typeof FileText; color: string }> = {
@@ -428,82 +371,6 @@ function SprintCalculator() {
   )
 }
 
-function TokenomicsCalculator() {
-  const [name, setName] = useState('DEEPTECH')
-  const [supply, setSupply] = useState(100000000)
-  const [price, setPrice] = useState(0.1)
-  const [vesting, setVesting] = useState(24)
-  const [revenue, setRevenue] = useState(70)
-
-  const marketCap = Math.round(supply * price * (1 + revenue / 100))
-
-  return (
-    <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl">
-      <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">Live Tokenomics Designer</h3>
-      <div className="grid md:grid-cols-2 gap-6">
-        <div className="space-y-3">
-          <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Token Name" className="bg-white/5 border-white/10 text-white" />
-          <Input type="number" value={supply} onChange={(e) => setSupply(Number(e.target.value))} placeholder="Total Supply" className="bg-white/5 border-white/10 text-white" />
-          <Input type="number" value={price} onChange={(e) => setPrice(Number(e.target.value))} placeholder="Initial Price ($)" step="0.01" className="bg-white/5 border-white/10 text-white" />
-          <div>
-            <label className="text-sm font-medium text-white/70">Vesting: {vesting} months</label>
-            <Slider value={[vesting]} onValueChange={(v) => setVesting(v[0])} min={0} max={48} />
-          </div>
-          <div>
-            <label className="text-sm font-medium text-white/70">Revenue Share: {revenue}%</label>
-            <Slider value={[revenue]} onValueChange={(v) => setRevenue(v[0])} min={0} max={90} />
-          </div>
-        </div>
-        <div className="bg-gradient-to-br from-green-600 to-emerald-600 text-white p-6 rounded-xl flex flex-col items-center justify-center">
-          <div className="text-sm opacity-80">Projected Market Cap</div>
-          <div className="text-4xl font-black">${marketCap.toLocaleString()}</div>
-          <Button className="mt-4 bg-white text-green-700 hover:bg-gray-100">Mint Token</Button>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function PQCCalculator() {
-  const [ecdsa, setEcdsa] = useState(50000)
-  const [data, setData] = useState(1200)
-
-  const risk = Math.min(99, Math.round((ecdsa / 10000) + (data / 100)))
-  const days = 1825 - (risk * 15)
-  const algo = risk > 70 ? 'SLH-DSA' : 'Kyber-768'
-
-  return (
-    <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl">
-      <h3 className="text-2xl font-bold mb-4 bg-gradient-to-r from-orange-400 to-red-400 bg-clip-text text-transparent">PQC Migration Risk Calculator</h3>
-      <div className="grid grid-cols-3 gap-4 mb-4">
-        <div className="bg-white/5 border border-white/10 p-4 rounded-xl text-center">
-          <div className="text-4xl font-black text-orange-400">{risk}</div>
-          <div className="text-sm text-white/60">Risk Score</div>
-        </div>
-        <div className="bg-white/5 border border-white/10 p-4 rounded-xl text-center">
-          <div className="text-4xl font-black text-red-400">{days}</div>
-          <div className="text-sm text-white/60">Days to Q-Day</div>
-        </div>
-        <div className="bg-white/5 border border-white/10 p-4 rounded-xl text-center">
-          <div className="text-2xl font-black text-purple-400">{algo}</div>
-          <div className="text-sm text-white/60">Recommended</div>
-        </div>
-      </div>
-      <div className="space-y-3">
-        <div>
-          <label className="text-sm font-medium text-white/70">ECDSA Keys: {ecdsa.toLocaleString()}</label>
-          <Slider value={[ecdsa]} onValueChange={(v) => setEcdsa(v[0])} min={0} max={1000000} step={1000} />
-        </div>
-        <div>
-          <label className="text-sm font-medium text-white/70">Data (TB): {data}</label>
-          <Slider value={[data]} onValueChange={(v) => setData(v[0])} min={0} max={10000} step={100} />
-        </div>
-      </div>
-      <Button className="mt-4 bg-gradient-to-r from-red-600 to-orange-600">Generate Migration Plan</Button>
-    </div>
-  )
-}
-
 function SpaceCalculator() {
   const [rocket, setRocket] = useState('Vikram-3')
   const [payload, setPayload] = useState(500)
@@ -588,7 +455,7 @@ function ReadinessCalculator() {
   const maxScore = 60
   const percentage = Math.round((totalScore / maxScore) * 100)
   const status = percentage >= 70 ? 'SCALING PHASE' : percentage >= 50 ? 'GROWTH PHASE' : 'DEVELOPMENT PHASE'
-  const recommendedModules = percentage >= 70 ? ['M12', 'M14'] : percentage >= 50 ? ['M04', 'M08', 'M12'] : ['M01', 'M02', 'M03', 'M10']
+  const recommendedModules = percentage >= 70 ? ['M05'] : percentage >= 50 ? ['M03', 'M04', 'M05'] : ['M01', 'M02']
 
   const handleSubmit = () => { if (email) setSubmitted(true) }
 
@@ -972,7 +839,7 @@ function CurriculumView() {
         {hiddenCount > 0 && (
           <div className="mt-3 mx-2 px-3 py-2.5 rounded-lg bg-white/5 border border-dashed border-white/10 text-[11px] text-white/40 flex items-center gap-2">
             <Sparkles className="w-3 h-3 text-purple-400 shrink-0" />
-            <span>{hiddenCount} more modules in development. Browse them in the full grid below.</span>
+            <span>{hiddenCount} more modules in development.</span>
           </div>
         )}
       </aside>
@@ -1317,7 +1184,7 @@ const tiers: Tier[] = [
   {
     name: 'Lifetime Access', price: '$597', sub: 'One-time payment',
     accent: 'from-purple-500 to-purple-700',
-    features: ['All 14 modules', 'All 6 quizzes', 'Interactive calculators', 'Community access'],
+    features: ['All 5 ready-to-deliver modules', 'All 5 graded quizzes', '14 downloadable templates + decks', 'Community access'],
     cta: 'Get Started',
     amountUSD: 597,
     cardLink: STRIPE_LINKS.lifetime,
@@ -1585,12 +1452,10 @@ function App() {
 
   const getCalculator = (moduleId: string) => {
     switch (moduleId) {
-      case 'M01': return <DeHypeCalculator />
-      case 'M02': return <SprintCalculator />
-      case 'M04': return <TokenomicsCalculator />
-      case 'M06': return <PQCCalculator />
-      case 'M08': return <SpaceCalculator />
-      case 'M12': return <SovereignCalculator />
+      case 'M01': return <DeHypeCalculator />       // DFV / De-Hype scoring for HCD Part 1
+      case 'M02': return <SprintCalculator />       // 90-day HCD action sprint for Part 2
+      case 'M03': return <SpaceCalculator />        // Space + Gaming launch economics
+      case 'M05': return <SovereignCalculator />    // EO startup scaling jurisdiction
       default: return null
     }
   }
@@ -1675,7 +1540,7 @@ function App() {
                 <span className="text-white/60 text-4xl md:text-5xl font-bold">in 90 days.</span>
               </h1>
               <p className="text-xl text-white/60 mb-8 max-w-lg">
-                The MOOC for the post-quantum, agentic, sovereign era. From PoC to AI-agent-powered product. 14 modules. 6 calculators. 6 quizzes. 10 deep-dives.
+                The MOOC for Space & DeepTech commercialization. From Copernicus data and HCD to $10M ARR. 5 ready-to-deliver modules, 5 graded quizzes, 14 templates + decks.
               </p>
               <div className="flex flex-wrap gap-3 mb-8">
                 <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 shadow-xl shadow-purple-500/30">
@@ -1686,7 +1551,7 @@ function App() {
                 </Button>
               </div>
               <div className="flex flex-wrap items-center gap-5 text-sm text-white/50">
-                <div className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-green-400" /> 14 Modules</div>
+                <div className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-green-400" /> 5 Modules Live</div>
                 <div className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-green-400" /> Quizzes & Labs</div>
                 <div className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-green-400" /> NFT Certificate</div>
                 <div className="flex items-center gap-1.5"><CheckCircle className="w-4 h-4 text-green-400" /> Lifetime Access</div>
@@ -1697,7 +1562,7 @@ function App() {
               <div className="absolute -inset-4 bg-gradient-to-br from-purple-500/30 via-pink-500/20 to-cyan-500/30 rounded-3xl blur-2xl" />
               <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6">
                 <div className="grid grid-cols-3 gap-3 mb-4">
-                  {modules.slice(0, 9).map((m) => (
+                  {modules.map((m) => (
                     <div key={m.id} className={`p-3 rounded-xl bg-gradient-to-br ${m.color} text-white text-center shadow-lg`}>
                       <m.icon className="w-6 h-6 mx-auto mb-1" />
                       <div className="text-[10px] font-bold opacity-90">{m.id}</div>
@@ -1706,15 +1571,15 @@ function App() {
                 </div>
                 <div className="grid grid-cols-3 gap-3 text-center pt-4 border-t border-white/10">
                   <div>
-                    <div className="text-2xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">14</div>
+                    <div className="text-2xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">5</div>
                     <div className="text-[10px] text-white/50 uppercase tracking-wider">Modules</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-black bg-gradient-to-r from-pink-400 to-cyan-400 bg-clip-text text-transparent">42+</div>
+                    <div className="text-2xl font-black bg-gradient-to-r from-pink-400 to-cyan-400 bg-clip-text text-transparent">25+</div>
                     <div className="text-[10px] text-white/50 uppercase tracking-wider">Lessons</div>
                   </div>
                   <div>
-                    <div className="text-2xl font-black bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">10</div>
+                    <div className="text-2xl font-black bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">14</div>
                     <div className="text-[10px] text-white/50 uppercase tracking-wider">Resources</div>
                   </div>
                 </div>
@@ -1740,9 +1605,9 @@ function App() {
       <section id="modules" className="relative py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
-            <Badge className="mb-3 bg-purple-500/20 text-purple-300 border border-purple-500/30">14 Modules</Badge>
+            <Badge className="mb-3 bg-purple-500/20 text-purple-300 border border-purple-500/30">5 Modules · Ready to Deliver</Badge>
             <h2 className="text-4xl md:text-5xl font-black mb-3 text-white">All Modules at a Glance</h2>
-            <p className="text-white/60 max-w-2xl mx-auto">Click any module to open lectures, the interactive calculator, and the quiz gate.</p>
+            <p className="text-white/60 max-w-2xl mx-auto">Click any module to open lectures, the interactive calculator, and the quiz gate. From HCD foundations to Space verticals to $10M ARR EO commercialization.</p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
